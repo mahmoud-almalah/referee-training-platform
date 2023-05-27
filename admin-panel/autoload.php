@@ -10,108 +10,22 @@ $getAllAdminSubMenu = getAllAdminSubMenu();
 $page_loaded = '';
 $pages = array(
     'dashboard',
-    'general-settings',
-    'site-settings',
-    'email-settings',
-    'social-login',
-    's3',
-    'prosys-settings',
-    'manage-videos-topic',
-    'video-stop',
-    'manage-payments',
-    'payment-requests',
-    'manage-users',
-    'manage-videos',
-    'import-from-youtube',
-    'import-from-dailymotion',
-    'import-from-twitch',
-    'manage-video-ads',
-    'create-video-ad',
-    'edit-video-ad',
-    'manage-website-ads',
-    'manage-user-ads',
-    'manage-themes',
-    'change-site-desgin',
-    'create-new-sitemap',
-    'manage-pages',
-    'changelog',
-    'backup',
-    'create-article',
-    'edit-article',
-    'manage-articles',
-    'manage-profile-fields',
-    'add-new-profile-field',
-    'edit-profile-field',
-    'payment-settings',
-    'verification-requests',
-    'manage-announcements',
-    'ban-users',
-    'custom-design',
-    'api-settings',
-    'manage-video-reports',
-    'manage-languages',
-    'add-language',
-    'edit-lang',
-    //'manage_sub_categories',
-    'push-notifications-system',
-    'sold_videos_analytics',
-    'manage-movies',
-    'manage-movies-category',
-    'manage-comments',
-    'manage-custom-pages',
-    'add-new-custom-page',
-    'edit-custom-page',
-    'manage-currencies',
-    'bank-receipts',
-    'earnings',
-    'copy_report',
-    'monetization-requests',
-    'mass-notifications',
-    'manage-invitation-keys',
-    'auto_subscribe',
-    'auto-delete',
-    'manage-activities',
-    'live',
-    'ffmpeg',
-    'video_settings',
-    'newsletters',
-    'slider',
-    'menu',
     'menu-admin',
     'submenu-admin',
-    'library',
-
-    'manage-categories',
-    'manage-topics',
-    'add-new-category',
-    'update-category',
-
-    'manage-decisions',
-    'add-new-decision',
-    'update-decision',
-
-    'manage-channels',
-    'add-new-channel',
-    'update-channel',
-    'email-template',
-    'manage-groups',
-    'add-user',
-    'export-pdf',
-    'export-excel',
-    'upload-video',
 );
+foreach ($getAllAdminMenu as $key => $value) {
+    $pages[] = $value['link'];
+}
+foreach ($getAllAdminSubMenu as $key => $value) {
+    $pages[] = $value['link'];
+}
 
 
 if (in_array($page, $pages)) {
     $page_loaded = PT_LoadAdminPage("$page/content");
 }
 
-/*
-echo $page;
-echo '<pre>';
-print_r($page_loaded);
-exit;
-*/
+
 if (empty($page_loaded)) {
     header("Location: " . PT_Link('admincp'));
     exit();
