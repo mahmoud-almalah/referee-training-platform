@@ -1,5 +1,7 @@
 changes/
 themes/default/css/.sass-cache/
 node_modules/
-upload/
+upload/files/
+upload/photos/
+upload/videos/
 backend/files/
