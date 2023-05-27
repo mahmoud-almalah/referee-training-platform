@@ -1,0 +1,867 @@
+<?php
+$page = 'library';
+$channel_id = null;
+$category_id = null;
+
+if(isset($_GET['page'])){
+  $page = $_GET['page'];
+}
+
+if(isset($_GET['channel_id'])){
+  $channel_id = $_GET['channel_id'];
+}
+
+if(isset($_GET['category_id'])){
+  $category_id = $_GET['category_id'];
+}
+
+
+
+?>
+<div class="profile-container">
+ <!-- Carousel Here -->
+ <?php  if( isset($_GET['channel_id']) && $_GET['channel_id'] > 0){ ?>
+ <!-- Banner Here -->
+ <?php $result = getChannel($channel_id);
+ $selectedChannel = $result->fetch_assoc();
+ $url = $pt->config->site_url;
+ ?>
+
+  <div>
+    <div style="position: absolute;margin-left: 85px;color: #fff;"><h1 style="background-color: #000;padding: 5px;"> <?php echo $selectedChannel['channel_name']?></h1></div>
+    <?php if(isset($selectedChannel['cover'])){?>
+    <img src="<?php echo $url .'/backend/'. $selectedChannel['cover']?>" style="height: 280px;width: -webkit-fill-available;">
+    <?php }else{ ?>
+     <img src="<?php echo $url .'/backend/nocover.jpg'?>" style="height: 280px;width: -webkit-fill-available;">
+    <?php }?>
+  </div>
+  <!-- Banner Ends -->
+<?php }else{include('carousel.html');}?>
+ <!-- Carousel Ends -->
+  <div id="">
+    <div class="links-container" style="background-color:#064c18">
+      <div class="container custom-links ">
+        <ul>
+          <li>
+            <a href="{{LINK ?page=library}}"
+              class="<?php echo ($page == 'library') ? 'active' : ''?> prof_menu"
+              >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+              Library
+              <span></span>
+            </a>
+          </li>
+          <li>
+            <a href="{{LINK ?page=collection}}"
+              class="<?php echo ($page == 'collection') ? 'active' : ''?> prof_menu"
+              >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-archive"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
+              My Collection
+              <span></span>
+            </a>
+          </li>
+          <li>
+            <a href="{{LINK ?page=play-lists}}"
+              class="<?php echo ($page == 'play-lists') ? 'active' : ''?> prof_menu"
+              >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-film"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
+              My Playlist
+              <span></span>
+            </a>
+          </li>
+          <li><a href="{{LINK ?page=shared-play-lists}}"
+              class="<?php echo ($page == 'shared-play-lists') ? 'active' : ''?> prof_menu"
+              >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+              Shared Playlist
+              <span></span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<?php 
+
+$url = $pt->config->site_url;
+$channels = [];
+$categories = [];
+$videos = [];
+$playlist = [];
+$selectedChannel = null;
+$selectedCategory = null;
+$allUsers = getUsers();
+
+if($page == 'library' || $page == 'collection'){
+  
+  if($category_id > 0){
+
+    $result = getChannel($channel_id);
+
+    $selectedChannel = $result->fetch_assoc();
+    $result = getCategory($category_id);
+    $selectedCategory = $result->fetch_assoc();
+    $videos = getVideosByCategory($category_id);
+    
+  }else if($channel_id > 0){
+
+
+    $channelCategories = [];
+
+    $result = getChannel($channel_id);
+
+    $selectedChannel = $result->fetch_assoc();
+
+    $channelCategories = getChannelCategoriesList($selectedChannel['id']);
+
+    $category_ids = [];
+
+    foreach($channelCategories as $channelCategory){
+      array_push($category_ids, $channelCategory['category_id']);
+    }
+
+    $categories = getCategoriesByIds($category_ids);
+
+  }else{
+
+    $userChannels = getUserChannels($pt->user_session);
+
+    if($page == 'collection'){
+      $userChannels = getUserCollection($pt->user_session);
+    }
+
+    $channel_ids = [];
+
+    foreach($userChannels as $userChannel){
+      array_push($channel_ids, $userChannel['channel_id']);
+    }
+
+    $channels = getChannelsById($channel_ids);    
+  }  
+
+
+}else if($page == 'play-lists'){
+
+  $playlist = getUserPlaylists($pt->user_session);
+
+  //echo '<pre>';print_r($playlist);exit;
+
+  
+}else if($page == 'shared-play-lists'){
+
+  $playlist = getAllSharedVideos($pt->user_session);  
+}
+
+
+?>
+
+
+<div class="container" style="height: 450px; overflow-y: scroll;">
+    <div class="page-container">
+
+<?php if($page == 'library' || $page == 'collection'){ ?>
+
+  <?php if($category_id > 0){ ?>
+        <div class="videos-latest-list">
+          <h4 class="ptitle">
+            <div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M17,10.5V7A1,1 0 0,0 16,6H4A1,1 0 0,0 3,7V17A1,1 0 0,0 4,18H16A1,1 0 0,0 17,17V13.5L21,17.5V6.5L17,10.5Z"></path>
+              </svg>
+            </div>
+            <a href="<?php echo '?page='.$page.'&channel_id='.$selectedChannel['id'];  ?>"><?php echo $selectedChannel['channel_name']?></a>
+             > <?php echo $selectedCategory['category']?> 
+          </h4>
+          <?php if(mysqli_num_rows($videos) > 0){ ?>
+          <?php $index = 1;?>
+          <?php foreach($videos as $video){ ?>
+              <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="video-list video-wrapper vp_vid_list" data-id="<?php echo $video['id']?>" data-views="<?php echo $video['views']?>">
+                    <ul class="item-labels" style="">
+                        <li>
+                          <?php echo $index;?>
+                        </li>
+                    </ul>               
+                  <div class="video-list-image">
+                      <a href="watch/<?php echo getVideoId($video)?>">
+                        <img data-src="<?php echo $video['thumbnail']?>" alt="<?php echo $video['title']?>" src="<?php echo $video['thumbnail']?>" style="opacity: 1;">
+                        <div class="play_hover_btn" onmouseenter="show_gif(this,'<?php echo $video['gif']?>')" onmouseleave="hide_gif(this)">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="#1350F3"><path d="M10,16.5V7.5L16,12M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"></path></svg>
+                        </div>
+                        <span class="duration"><?php echo $video['duration']?></span>
+                      </a>
+                  </div>
+                  <div class="pt_vid_fixed_height vp_vid_foot">
+                    <div class="video-list-title">
+                      <a href="watch/<?php echo getVideoId($video)?>" ><h4 title="<?php echo $video['title']?>"><?php echo $video['title']?></h4></a>
+                    </div>
+                    <div class="video-list-by">
+                      <span><a href="watch/<?php echo getVideoId($video)?>"></a></span>
+                      <div class="vp_vid_bottm">
+                          <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24">
+                              <path fill="currentColor" d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"></path>
+                            </svg> 
+                            <?php echo $video['views']?> Views
+                          </span> 
+                          <span class="vp_vid_time"></span>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <?php $index++;?>
+          <?php } ?>      
+          </div>
+          <?php }else{ ?>      
+          <div class="empty_state">
+              <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M14,17H7V15H14M17,13H7V11H17M17,9H7V7H17M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3Z"></path></svg></span>
+              <p>No videos found!</p>
+          </div>  
+          <?php } ?>           
+
+  <?php }else if($channel_id > 0){ ?>
+
+          <h4 class="ptitle">
+              <div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M12,2.5L8.42,8.06L2,9.74L6.2,14.88L5.82,21.5L12,19.09L18.18,21.5L17.8,14.88L22,9.74L15.58,8.06L12,2.5M9.38,10.5C10,10.5 10.5,11 10.5,11.63A1.12,1.12 0 0,1 9.38,12.75C8.75,12.75 8.25,12.25 8.25,11.63C8.25,11 8.75,10.5 9.38,10.5M14.63,10.5C15.25,10.5 15.75,11 15.75,11.63A1.12,1.12 0 0,1 14.63,12.75C14,12.75 13.5,12.25 13.5,11.63C13.5,11 14,10.5 14.63,10.5M9,15H15C14.5,16.21 13.31,17 12,17C10.69,17 9.5,16.21 9,15Z"></path>
+                </svg>
+              </div>  
+              <a href="<?php echo '?page='.$page;  ?>"><?php echo $selectedChannel['channel_name']?></a>
+              
+              <!-- <a href="<?php echo '?page='.$page;?>" class="btn btn-small btn-primary" style="align-self: end;">Back</a> -->
+          </h4>  
+          <?php if(mysqli_num_rows($categories) > 0){?>      
+          <?php foreach($categories as $category){ ?>
+          <div class="col-md-4 col-sm-6 play-lists">
+              <div class="plist_parent">
+                  <div class="avatar">
+                    <span class="video-labels">
+                      <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather feather-info">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="12" y1="16" x2="12" y2="12"></line>
+                          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>                          
+                      </span>
+                      <ul class="video-labels-dropdown hidden">
+                          <li onclick="sharePlaylist(<?php echo $pt->user_session; ?>,<?php echo $category['id']; ?>)" >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                            Share
+                          </li>
+                      </ul>
+                    </span>                  
+                      <a href="<?php echo '?page='.$page.'&channel_id='.$selectedChannel['id'].'&category_id='.$category['id'];  ?>">
+                          <img src="<?php echo $url .'/backend/'. $selectedChannel['thumbnail']?>" alt="<?php echo $selectedChannel['channel_name']?>">
+                      </a>
+                      <div class="plist-name">
+                          <h4>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                              <path fill="currentColor" d="M19,9H2V11H19V9M19,5H2V7H19V5M2,15H15V13H2V15M17,13V19L22,16L17,13Z"></path>
+                            </svg>
+                            <?php echo $category['category']?> 
+                          </h4>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <?php } ?>
+          <?php }else{ ?>      
+          <div class="empty_state">
+              <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M14,17H7V15H14M17,13H7V11H17M17,9H7V7H17M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3Z"></path></svg></span>
+              <p>No categories found!</p>
+          </div>  
+          <?php } ?>           
+
+  <?php }else{ ?>
+
+          <?php if(mysqli_num_rows($channels) > 0){?>
+          <?php foreach($channels as $channel){ ?>
+            <div class="col-md-4 col-sm-6 play-lists">
+                <div class="plist_parent">
+                    <div class="avatar">
+                      <span class="video-labels">
+                        <span>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather feather-info">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                          </svg>                          
+                        </span>
+                        <ul class="video-labels-dropdown hidden">
+                          <?php if($page != 'collection'){?>
+                            <li onclick="addToCollection(<?php echo $pt->user_session; ?>,<?php echo $channel['id']; ?>)" >
+                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                                  <path fill="currentColor" d="M2,6V8H14V6H2M2,10V12H14V10H2M20.04,10.13C19.9,10.13 19.76,10.19 19.65,10.3L18.65,11.3L20.7,13.35L21.7,12.35C21.92,12.14 21.92,11.79 21.7,11.58L20.42,10.3C20.31,10.19 20.18,10.13 20.04,10.13M18.07,11.88L12,17.94V20H14.06L20.12,13.93L18.07,11.88M2,14V16H10V14H2Z"></path>
+                              </svg> 
+                              Add to Collection
+                            </li>
+                            <?php } ?>
+                            <?php if($pt->user->admin || $page == 'collection'){ ?>
+                            <li onclick="deleteChannel(<?php echo $pt->user_session; ?>,<?php echo $channel['id']; ?>,'<?php echo $page; ?>')" >
+                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                                  <path fill="currentColor" d="M15,16H19V18H15V16M15,8H22V10H15V8M15,12H21V14H15V12M3,18A2,2 0 0,0 5,20H11A2,2 0 0,0 13,18V8H3V18M14,5H11L10,4H6L5,5H2V7H14V5Z"></path>
+                              </svg> 
+                              Delete
+                            </li>
+                            <?php } ?>
+
+                        </ul>
+                      </span>
+                        <a href="<?php echo '?page='.$page.'&channel_id='.$channel['id']?>">
+                            <img src="<?php echo $url .'/backend/'. $channel['thumbnail']?>" alt="<?php echo $channel['channel_name']?>">
+                        </a>
+                        <!-- <span class="alb_count" title="Videos"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M17,10.5V7A1,1 0 0,0 16,6H4A1,1 0 0,0 3,7V17A1,1 0 0,0 4,18H16A1,1 0 0,0 17,17V13.5L21,17.5V6.5L17,10.5Z"></path></svg> {{COUNT}}</span> -->
+                        <div class="plist-name">
+                            <h4>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor" d="M19,9H2V11H19V9M19,5H2V7H19V5M2,15H15V13H2V15M17,13V19L22,16L17,13Z"></path>
+                              </svg>
+                              <?php echo $channel['channel_name']?> 
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          <?php } ?>
+          <?php }else{ ?>      
+          <div class="empty_state">
+              <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M14,17H7V15H14M17,13H7V11H17M17,9H7V7H17M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3Z"></path></svg></span>
+              <p>No channels found!</p>
+          </div>  
+          <?php } ?>  
+
+  <?php }  ?> 
+
+
+<?php }else if($page == 'play-lists'){ ?>
+
+  <?php if(sizeof($playlist) > 0){?>
+  <?php foreach($playlist as $item){?>
+
+    <div class="col-md-4 col-sm-6 play-lists" id="plist_<?php echo $item['id']?>" data-playlist="<?php echo $item['id']?>">
+      <div class="plist_parent" data-id="<?php echo $item['id']?>" data-views="">
+        <div class="avatar">
+          
+          <span class="video-labels">
+            <span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather feather-info">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>                          
+            </span>
+            <ul class="video-labels-dropdown hidden">
+              <li onclick="PT_EditList('<?php echo $item['id']?>');"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M2,6V8H14V6H2M2,10V12H14V10H2M20.04,10.13C19.9,10.13 19.76,10.19 19.65,10.3L18.65,11.3L20.7,13.35L21.7,12.35C21.92,12.14 21.92,11.79 21.7,11.58L20.42,10.3C20.31,10.19 20.18,10.13 20.04,10.13M18.07,11.88L12,17.94V20H14.06L20.12,13.93L18.07,11.88M2,14V16H10V14H2Z" /></svg> {{LANG edit}}</li>
+              <li onclick="PT_DeleteList('<?php echo $item['id']?>');"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M15,16H19V18H15V16M15,8H22V10H15V8M15,12H21V14H15V12M3,18A2,2 0 0,0 5,20H11A2,2 0 0,0 13,18V8H3V18M14,5H11L10,4H6L5,5H2V7H14V5Z" /></svg> {{LANG delete}}</li>              
+            <li id="share_list" rel="<?php echo $item['playlist_id']?>" data-toggle="modal" data-target="#share-modal" >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
+                <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
+              </svg>
+              Share
+            </li>
+            </ul>
+          </span>
+          <a href="watch/<?php echo getVideoId($item)?>/list/<?php echo $item['playlist_id']; ?>" >
+            <img src="<?php echo $item['thumbnail']?>" alt="<?php echo $item['title']?>" />
+          </a>
+          <span class="alb_count" title="<?php echo $item['count']?>"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M17,10.5V7A1,1 0 0,0 16,6H4A1,1 0 0,0 3,7V17A1,1 0 0,0 4,18H16A1,1 0 0,0 17,17V13.5L21,17.5V6.5L17,10.5Z"/></svg> <?php echo $item['count']?></span>
+          <div class="plist-name">
+            <h4>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M19,9H2V11H19V9M19,5H2V7H19V5M2,15H15V13H2V15M17,13V19L22,16L17,13Z" /></svg> 
+              <?php echo $item['title']?>
+            </h4>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  <?php }    ?>
+      <?php }else{ ?>      
+          <div class="empty_state">
+              <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M14,17H7V15H14M17,13H7V11H17M17,9H7V7H17M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3Z"></path></svg></span>
+              <p>No playlist found!</p>
+          </div>  
+
+
+
+  <?php }    ?>
+
+<?php }else if($page == 'shared-play-lists'){ ?>
+<h4 class="ptitle">
+        <div><svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24"><path fill="currentColor" d="M19,9H2V11H19V9M19,5H2V7H19V5M2,15H15V13H2V15M17,13V19L22,16L17,13Z"></path></svg></div> Shared Playlists
+    </h4>
+
+  <?php if(sizeof($playlist) > 0){?>
+  <?php foreach($playlist as $item){?>
+
+      <div class="col-md-4 col-sm-6 play-lists" id="">
+          <div class="plist_parent" data-id="" data-views="">
+              <div class="avatar">
+                  <span class="video-labels">
+                    <span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather feather-info">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                      </svg>                          
+                    </span>
+                    <ul class="video-labels-dropdown hidden">
+                      <li onclick="PT_DeleteSharedList(<?php echo $pt->user_session; ?>,'<?php echo $item['playlist_id']?>');"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M15,16H19V18H15V16M15,8H22V10H15V8M15,12H21V14H15V12M3,18A2,2 0 0,0 5,20H11A2,2 0 0,0 13,18V8H3V18M14,5H11L10,4H6L5,5H2V7H14V5Z" /></svg> {{LANG delete}}</li>              
+                    </ul>
+                  </span>                
+                  <a href="watch/<?php echo getVideoId($item)?>/list/<?php echo $item['playlist_id']; ?>" >
+                      <img src="<?php echo $item['thumbnail']; ?>" alt="<?php echo $item['title']; ?>">
+                  </a>
+                  <span class="alb_count" title="<?php echo $item['count']?>"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M17,10.5V7A1,1 0 0,0 16,6H4A1,1 0 0,0 3,7V17A1,1 0 0,0 4,18H16A1,1 0 0,0 17,17V13.5L21,17.5V6.5L17,10.5Z"/></svg> <?php echo $item['count']?></span>
+                  <div class="plist-name">
+                      <h4><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M19,9H2V11H19V9M19,5H2V7H19V5M2,15H15V13H2V15M17,13V19L22,16L17,13Z"></path></svg><?php echo $item['title']; ?></h4>
+                  </div>
+              </div>
+          </div>
+      </div>
+  <?php }    ?>
+            <?php }else{ ?>      
+          <div class="empty_state">
+              <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M14,17H7V15H14M17,13H7V11H17M17,9H7V7H17M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3Z"></path></svg></span>
+              <p>No playlist found!</p>
+          </div>  
+          <?php } ?> 
+<?php }  ?>
+
+
+    </div>
+  </div>
+
+<div class="modal fade" id="share-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Share Playlist</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span class="close_modal" aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+
+              <label for="share_with" class="col-form-label">Share With:</label>
+              <!-- <input type="text" class="form-control" id="share_with" placeholder="User Name" autocomplete="off"> -->
+              <input type="hidden" id="user">
+              <input type="hidden" id="list_id">
+               
+              <select class="form-control" id="all-users" >
+                  
+                <?php foreach($allUsers as $user){?>
+                  <?php if($user['id'] != $pt->user_session){  ?>
+                  <option value="<?php echo $user['id']?>"><?php echo $user['username']?></option>
+                  <?php }  ?>
+                <?php } ?>
+                </select>
+      </div>
+        </form>
+        </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" id="share_video" class="btn btn-primary">Share</button>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script type="text/javascript">
+
+
+$(function(){
+  $('.video-labels').click(function() {
+    if(!$(this).find(".video-labels-dropdown").hasClass('hidden')){
+      $(this).find(".video-labels-dropdown").addClass('hidden');
+    }else{
+      $(this).find(".video-labels-dropdown").removeClass('hidden');
+    }
+  })
+})  
+
+$(function(){
+  $(document).on('mouseover','.video-list-image',function(){
+    $(this).siblings('.item-labels').addClass('active-item');
+  })
+  $(document).on('mouseout','.video-list-image',function(){
+    $(this).siblings('.item-labels').removeClass('active-item');
+  })
+})
+
+function addToCollection(user_id,channel_id){
+    $.ajax({
+      url: '<?php echo $url?>/aj/user/add_to_collection',
+      type: 'post',
+      dataType: 'json',
+      data: {user_id: user_id,channel_id:channel_id},
+    })
+    .done(function(data) {
+      if (data.status == 200) {
+        swal({
+          title:"Channel Added",
+          text:"Channel has been added to collection",
+          type:"success"
+        });
+      }
+      else{
+        swal(
+          'Error!',
+          'Something went wrong.Please try again later!',
+          'error'
+        );
+      }
+    })
+    .fail(function() {
+      console.log("error");
+    })
+}
+
+function deleteChannel(user_id,channel_id,type){
+  
+  if (!channel_id) { return false;}
+  swal({
+    title: 'Confirmation!',
+    text: "Are you sure you want to delete this channel?",
+    type: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes,delete it!'
+  }).then(function(){
+    $.ajax({
+      url: '<?php echo $url?>/aj/user/delete_channel',
+      type: 'post',
+      dataType: 'json',
+      data: {user_id: user_id,channel_id:channel_id,type:type},
+    })
+    .done(function(data) {
+      if (data.status == 200) {
+        swal({
+          title:"Deleted!",
+          text:data.name +  " has been deleted!",
+          type:"success"
+        });
+        setTimeout(()=>{
+          window.location.reload();
+        },2000)
+      }
+      else{
+        swal(
+          'Error!',
+          'Something went wrong.Please try again later!',
+          'error'
+        );
+      }
+    })
+    .fail(function() {
+      console.log("error");
+    })
+    
+  })  
+}
+
+/*
+function sharePlaylist(user_id,category_id){
+  $('#user_id').val(user_id);
+  $('#category_id').val(category_id);
+  $('#share-modal').modal('show');
+}
+*/
+
+
+
+
+/*
+$(function(){
+  $('#share_playlist').click(function(){
+      let user_id = $('#user_id').val();
+      let category_id = $('#category_id').val();
+    $.ajax({
+      url: '<?php echo $url?>/aj/user/share_playlist',
+      type: 'post',
+      dataType: 'json',
+      data: {user_id: user_id,category_id:category_id,users:$('#all-users').val()},
+    })
+    .done(function(data) {
+      if (data.status == 200) {
+        $('#share-modal').modal('hide');
+        swal({
+          title:"Playlist Shared",
+          text:"Playlist has been added to shared",
+          type:"success"
+        });
+      }
+      else{
+        swal(
+          'Error!',
+          'Something went wrong.Please try again later!',
+          'error'
+        );
+      }
+    })
+    .fail(function() {
+      console.log("error");
+    })    
+  })
+})
+
+function deletePlaylist(user_id,category_id,type){
+  if (!category_id) { return false;}
+  swal({
+    title: 'Confirmation!',
+    text: "Are you sure you want to delete this playlist?",
+    type: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes,delete it!'
+  }).then(function(){
+    $.ajax({
+      url: '<?php echo $url?>/aj/user/delete_playlist',
+      type: 'post',
+      dataType: 'json',
+      data: {user_id: user_id,category_id:category_id,type:type},
+    })
+    .done(function(data) {
+      if (data.status == 200) {
+        swal({
+          title:"Deleted!",
+          text:data.name +  " has been deleted!",
+          type:"success"
+        });
+        setTimeout(()=>{
+          window.location.reload();
+        },2000)
+      }
+      else{
+        swal(
+          'Error!',
+          'Something went wrong.Please try again later!',
+          'error'
+        );
+      }
+    })
+    .fail(function() {
+      console.log("error");
+    })
+    
+  })  
+}
+
+*/
+
+$(document).ready(function(){
+  $('#share-modal').on('shown.bs.modal', function (e) {
+    $('#all-users').select2();
+  })
+})
+
+$(document).ready(function(){ 
+
+  $(document).on('click','#share_list',function(){
+    var playlist_id = $(this).attr('rel');
+    $('#list_id').val(playlist_id);   
+  })
+})
+
+
+  $(document).on('click','#share_video',function(){
+    var user_id = $('#all-users').val();
+    var list_id = $('#list_id').val();
+    $.ajax({
+            url: '{{LINK aj/user/share_playlist}}',
+            type : 'POST',
+            data : {user_id:user_id,list_id:list_id},
+            beforeSend: function() {
+                
+            },
+            success: function(data) {
+              console.log(data.html);
+                if (data.status == 200) {
+                  if(data.html == 'success'){
+                    swal("Success!", "Playlist shared successfully", "success");
+                    setTimeout(function(){ $('.close_modal').click(); }, 1000);
+                    
+                  }else{
+                    swal("Failed!", "User not found!", "error");
+                  }
+                }
+            }
+        });
+  });
+
+
+
+function PT_EditList(id){
+  if (!id) {
+    return false;
+  }
+  $.ajax({
+    url: '{{LINK aj/lists}}',
+    type: 'GET',
+    dataType: 'json',
+    data: {type: 'list',a:'edit',id:id},
+  })
+  .done(function(data) {
+    if (data.status == 200) {
+      swal({
+        title: '',
+        type: "",
+        html:data.html,
+        showCancelButton: true,
+        allowOutsideClick:false,
+        confirmButtonText:'{{LANG save}}',
+        cancelButtonText:'{{LANG cancel}}',
+        preConfirm: function (email) {
+        return new Promise(function (resolve, reject) {
+            name     = $(".edit-list-form").find('input').val();
+            desc     = $(".edit-list-form").find('textarea').val();
+            privacy  = $(".edit-list-form").find('select').val();
+            setTimeout(function() {
+              if (name == '') {
+                reject('{{LANG pl_name_required.}}');
+              }
+              else if(privacy < 0 || privacy > 1){
+                reject('{{LANG please_check_details}}');
+              }
+              else {
+                resolve();
+              }
+            }, 100)
+          })
+        }
+      }).then(function(){
+        if (!name){ return;}
+        $.ajax({
+          url: '{{LINK aj/lists?type=list&a=update}}',
+          type: 'POST',
+          dataType: 'json',
+          data: {name:name,desc:desc,pr:privacy,id:id},
+        })
+        .done(function(data) {
+          if (data.status == 200) {
+            swal({
+              title:name,
+              text:"{{LANG pl_saved}}",
+              type:'success'
+            });
+
+            PT_Delay(function(){
+              swal.close();
+            },2000);
+          }
+          else if(data.status == 200){
+            swal(
+              'Error!',
+              'Something went wrong.Please try again later!',
+              'error'
+            );
+          }
+        })
+        .fail(function() {
+          swal.close();
+          console.log("error");
+        })
+      },
+      function(){
+        //Error
+      })
+    }
+  })
+  .fail(function() {
+    console.log("error");
+  })
+}
+
+function PT_DeleteList(id){
+  if (!id) { return false;}
+  swal({
+    title: '{{LANG confirmation}}',
+    text: "{{LANG confirm_delist}}",
+    type: 'warning',
+    showCancelButton: true,
+    confirmButtonText: '{{LANG yes_del}}'
+  }).then(function(){
+    $.ajax({
+      url: '{{LINK aj/lists}}',
+      type: 'GET',
+      dataType: 'json',
+      data: {type: 'list',a:'delist',id:id},
+    })
+    .done(function(data) {
+      if (data.status == 200) {
+        $("[data-playlist='"+id+"']").slideUp(function(){
+          $(this).remove();
+        });
+        
+        swal({
+          title:"{{LANG deleted}}",
+          text:data.name +  " {{LANG was_deleted}}",
+          type:"success"
+        });
+      }
+      else{
+        swal(
+          'Error!',
+          'Something went wrong.Please try again later!',
+          'error'
+        );
+      }
+    })
+    .fail(function() {
+      console.log("error");
+    })
+    
+  })
+}
+
+
+function PT_DeleteSharedList(user_id,id){
+  if (!id) { return false;}
+  swal({
+    title: '{{LANG confirmation}}',
+    text: "{{LANG confirm_delist}}",
+    type: 'warning',
+    showCancelButton: true,
+    confirmButtonText: '{{LANG yes_del}}'
+  }).then(function(){
+    $.ajax({
+      url: '{{LINK aj/user/del-shared-list}}',
+      type: 'POST',
+      dataType: 'json',
+      data: {shared_list_id:id,user_id:user_id},
+    })
+    .done(function(data) {
+      if (data.status == 200) {
+        
+        swal({
+          title:"{{LANG deleted}}",
+          text:data.name +  " {{LANG was_deleted}}",
+          type:"success"
+        });
+        setTimeout(()=>{window.location.reload()},2000)
+      }
+      else{
+        swal(
+          'Error!',
+          'Something went wrong.Please try again later!',
+          'error'
+        );
+      }
+    })
+    .fail(function() {
+      console.log("error");
+    })
+    
+  })
+}
+
+
+</script>

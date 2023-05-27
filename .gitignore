@@ -1,0 +1,5 @@
+changes/
+themes/default/css/.sass-cache/
+node_modules/
+upload/
+backend/files/

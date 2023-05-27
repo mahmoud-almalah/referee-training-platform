@@ -1,0 +1,88 @@
+<div class="container" style="height: 450px; overflow-y: scroll;">
+    <div class="page-container">
+<?php
+
+$userChannels = getUserCollection($pt->user_session);
+
+$channel_ids = [];
+
+foreach($userChannels as $userChannel){
+  array_push($channel_ids, $userChannel['channel_id']);
+}
+
+$channels = getChannelsById($channel_ids);
+
+
+?>
+
+
+
+<?php if(mysqli_num_rows($channels) > 0){?>
+          <?php foreach($channels as $channel){ ?>
+
+          <?php
+
+            $topics = getAllChannelTopics($channel['library_id'],$channel['id']);
+            $count = $topics->num_rows;
+          ?>
+
+            <div class="col-md-4 col-sm-6 play-lists">
+                <div class="plist_parent">
+                    <div class="avatar">
+
+                      <span class="video-labels">
+                        <span>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather feather-info">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                          </svg>                          
+                        </span>
+                        <ul class="video-labels-dropdown hidden">
+
+
+                            <?php if($pt->user->admin || $page == 'collection'){ ?>
+                            <li onclick="deleteChannel(<?php echo $pt->user_session; ?>,<?php echo $channel['id']; ?>,'<?php echo $page; ?>')" >
+                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                                  <path fill="currentColor" d="M15,16H19V18H15V16M15,8H22V10H15V8M15,12H21V14H15V12M3,18A2,2 0 0,0 5,20H11A2,2 0 0,0 13,18V8H3V18M14,5H11L10,4H6L5,5H2V7H14V5Z"></path>
+                              </svg> 
+                              Delete
+                            </li>
+                            <?php } ?>
+ 
+                        </ul>
+                      </span>
+
+                        <a href="<?php echo '?page=collection&channel_id='.$channel['id'];?>">
+                            <img src="<?php echo $url .'/backend/'. $channel['cover']?>" alt="<?php echo $channel['channel_name']?>">
+                        </a>
+                        <span class="alb_count" title="Topics">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M12,2.5L8.42,8.06L2,9.74L6.2,14.88L5.82,21.5L12,19.09L18.18,21.5L17.8,14.88L22,9.74L15.58,8.06L12,2.5M9.38,10.5C10,10.5 10.5,11 10.5,11.63A1.12,1.12 0 0,1 9.38,12.75C8.75,12.75 8.25,12.25 8.25,11.63C8.25,11 8.75,10.5 9.38,10.5M14.63,10.5C15.25,10.5 15.75,11 15.75,11.63A1.12,1.12 0 0,1 14.63,12.75C14,12.75 13.5,12.25 13.5,11.63C13.5,11 14,10.5 14.63,10.5M9,15H15C14.5,16.21 13.31,17 12,17C10.69,17 9.5,16.21 9,15Z"></path>
+                          </svg>                        
+                            &nbsp;<?php echo $count?> 
+                      </span>
+                        <div class="plist-name">
+                            <h4>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor" d="M19,9H2V11H19V9M19,5H2V7H19V5M2,15H15V13H2V15M17,13V19L22,16L17,13Z"></path>
+                              </svg>
+                              <?php echo $channel['channel_name']?> 
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          <?php } ?>
+          <?php }else{ ?>      
+          <div class="empty_state">
+                            <span class="nav-link-icon">
+                                <i class="material-icons">hub</i>
+                            </span> 
+              <p>No channel found!</p>
+          </div>  
+          <?php } ?> 
+
+
+        </div>
+      </div>

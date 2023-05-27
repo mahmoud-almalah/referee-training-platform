@@ -1,0 +1,533 @@
+<?php
+$getAllVideos = getAllVideos();
+$getUsers = getUsers();
+$getAllTopics = getAllTopics();
+$getAllChannels = getChannels();
+$getAllLibrary = getAllLibrary();
+
+?>
+<style>
+    .table-responsive1 {
+        overflow-x: auto;
+    }
+    #user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        align-items: center;
+        margin-right: 10px;
+    }
+    .change_status {
+        margin-bottom: 5px;
+    }
+    .btn-group-xs>.btn, .btn-xs {
+        margin-left: 0;
+    }
+    .btn-group-xs>.btn, .btn-xs {
+        padding: .25rem .4rem;
+        font-size: .875rem;
+        line-height: .5;
+        border-radius: .2rem;
+    }
+    .btn-success {
+        color: #fff;
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+    .btn {
+        display: inline-block;
+        font-weight: 400;
+        color: #212529;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+        border: 1px solid transparent;
+        padding: .375rem .75rem;
+        font-size: .875rem;
+        line-height: 1.5;
+        border-radius: .25rem;
+    }
+    .btn-group-xs>.btn, .btn-xs {
+        padding: .25rem .4rem;
+        font-size: .875rem;
+        line-height: .5;
+        border-radius: .2rem;
+    }
+    .btn-group-xs>.btn, .btn-xs {
+        margin-left: 0;
+    }
+    .btn-danger {
+        color: #fff;
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+    .btn {
+        display: inline-block;
+        font-weight: 400;
+        color: #212529;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+        border: 1px solid transparent;
+        padding: .375rem .75rem;
+        font-size: .875rem;
+        line-height: 1.5;
+        border-radius: .25rem;
+    }
+    .btn-group-xs>.btn, .btn-xs {
+        padding: .25rem .4rem;
+        font-size: .875rem;
+        line-height: .5;
+        border-radius: .2rem;
+    }
+    .btn-group-xs>.btn, .btn-xs {
+        margin-left: 0;
+    }
+    .btn-primary {
+        color: #fff;
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    .btn {
+        display: inline-block;
+        font-weight: 400;
+        color: #212529;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+        border: 1px solid transparent;
+        padding: .375rem .75rem;
+        font-size: .875rem;
+        line-height: 1.5;
+        border-radius: .25rem;
+    }
+</style>
+<div class="container-fluid">
+    <div>
+        <h3>Manage Videos</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="#">Home</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="#">Videos</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Manage Videos</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div id="dashboard-daterangepicker" class="btn btn-outline-light pull-right">
+                        <a href="{{LINK upload-video}}" class="btn btn-primary">Upload Video</a>
+                    </div>
+                    <h6 class="card-title">Manage Videos & Videos Uploader</h6>
+                    <div class="d-settings-alert"></div>
+                    <div class="clearfix"></div>
+                    <br>
+
+                    <form id="search-form" method="post" class="form-inline mb-2 mr-2 d-none d-md-block search-form col-sm-12">
+                        <label for="search" class="sr-only">Search:</label>
+
+                        <input type="text" name="search" id="search" class="form-control" placeholder="Search by video name, library, collection, topic, added by">
+
+                        <select name="library" id="library" class="form-control library mr-2 ml-2">
+                            <option value="">Select Library</option>
+                            <?php
+                            foreach ($getAllLibrary as $library) {
+                                ?>
+                            <option value="<?php echo $library['id']; ?>"><?php echo $library['name']; ?></option>
+                            <?php
+                            }
+                            ?>
+                        </select>
+
+                        <select name="channel" id="channel" class="form-control channel mr-2 ml-2">
+                            <option value="">Select Collection</option>
+                            <?php
+                            foreach ($getAllChannels as $channel) {
+                                ?>
+                            <option value="<?php echo $channel['id']; ?>"><?php echo $channel['channel_name']; ?></option>
+                            <?php
+                            }
+                            ?>
+                        </select>
+
+                        <select name="topic" id="topic" class="form-control topic mr-2 ml-2">
+                            <option value="">Select Topic</option>
+                            <?php
+                            foreach ($getAllTopics as $topic) {
+                                ?>
+                            <option value="<?php echo $topic['id']; ?>"><?php echo $topic['name']; ?></option>
+                            <?php
+                            }
+                            ?>
+                        </select>
+
+                        <select name="added_by" id="added_by" class="form-control added_by mr-2 ml-2">
+                            <option value="">Select Added By</option>
+                            <?php
+                            foreach ($getUsers as $user) {
+                                ?>
+                            <option value="<?php echo $user['id']; ?>"><?php echo $user['username']; ?></option>
+                            <?php
+                            }
+                            ?>
+                        </select>
+
+                        <select name="status" id="status" class="form-control status mr-2 ml-2">
+                            <option value="">Select Status</option>
+                            <option value="1">Active</option>
+                            <option value="0">Inactive</option>
+                        </select>
+                        <br>
+                        <button type="submit" id="search-btn" class="btn btn-primary mr-2 ml-2">Search</button>
+                        <button type="button" id="reset-btn" class="btn btn-danger">Reset</button>
+                    </form>
+
+                    <br>
+                    <div class="table-responsive1">
+                        <table class="table table-bordered table-striped table-hover" id="video-table">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Video Name</th>
+                                <th>Library</th>
+                                <th>Collection</th>
+                                <th>Topic</th>
+                                <th>Added By</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody id="sort_video" class="tbody">
+                            <?php
+                            foreach ($getAllVideos as $video) {
+                                if ($video['library_id'] != null || $video['library_id'] != '') {
+                                    ?>
+                            <tr id="<?= $video['id']; ?>">
+                                <td><?php echo $video['id']; ?></td>
+                                <td><?php echo $video['title']; ?></td>
+                                <td>
+                                    <?php
+                                            foreach ($getAllLibrary as $library) {
+                                                if ($library['id'] == $video['library_id']) {
+                                                    echo $library['name'];
+                                                }
+                                            }
+                                            ?>
+                                </td>
+                                <td>
+                                    <?php
+                                            foreach ($getAllChannels as $channel) {
+                                                if ($channel['id'] == $video['channel_id']) {
+                                                    echo $channel['channel_name'];
+                                                }
+                                            }
+                                            ?>
+                                </td>
+                                <td>
+                                    <?php
+                                            foreach ($getAllTopics as $topic) {
+                                                if ($topic['id'] == $video['topic_id']) {
+                                                    echo $topic['name'];
+                                                }
+                                            }
+                                            ?>
+                                </td>
+                                <td>
+                                    <img src="<?php echo PT_UserData($video['user_id'])->avatar; ?>" id="user-avatar" alt="User Image">
+                                    <?php echo PT_UserData($video['user_id'])->username; ?>
+                                </td>
+                                <td class="text-center">
+                                    <?php if($video['active'] == '1'){ ?>
+                                    <span class="btn btn-success change_status" rel="<?= $video['id'] ?>" onclick="ChangeStatus('<?php echo $video['id']; ?>','0')">
+                                        <i class="fa fa-check" aria-hidden="true"></i></span>
+                                    <?php }else{ ?>
+                                    <span class="btn btn-danger change_status" rel="<?= $video['id'] ?>" onclick="ChangeStatus('<?php echo $video['id']; ?>','1')">
+                                        <i class="fa fa-times" aria-hidden="true"></i></span>
+                                    <?php } ?>
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{LINK edit-video/}}<?php echo $video['id']; ?>"
+                                       class="btn btn-primary btn-sm">Edit</a>
+
+                                    <button class="btn btn-info btn-sm info" rel="<?php echo $video['id']; ?>">
+                                        Info
+                                    </button>
+
+                                    <a href="javascript:void(0)" class="btn btn-danger btn-sm"
+                                       onclick="DeleteVideo('<?php echo $video['id']; ?>')">Delete</a>
+
+                                    <a href="{{LINK watch/}}<?php echo getVideoId($video)?>/"
+                                       class="btn btn-success btn-sm">View</a>
+                                </td>
+                            </tr>
+                            <?php
+                                }
+                            }
+                            ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="more-info" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h5 class="modal-title text-center" id="exampleModalLabel">Video Info</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="id" id="video-id" value="0">
+                <div class="form-group col-md-12">
+                    <label for="video-name">Video Name</label>
+                    <input type="text" class="form-control" id="video-name" name="video-name" readonly>
+                </div>
+                <div class="col-md-6 float-left" id="technical-decision">
+                    <div class="form-group">
+                        <label for="technical">TECHNICAL DECISION</label>
+                        <input type="text" class="form-control" id="technical" name="technical" placeholder="NO TECHNICAL" readonly>
+                    </div>
+                </div>
+                <div class="col-md-6 float-right" id="disciplinary-decision">
+                    <div class="form-group">
+                        <label for="disciplinary">DISCIPLINARY DECISION</label>
+                        <input type="text" class="form-control" id="disciplinary" name="disciplinary" placeholder="NO DISCIPLINARY" readonly>
+                    </div>
+                </div>
+                <div class="col-md-6 float-left" id="var-technical-decision">
+                    <div class="form-group">
+                        <label for="var-technical">VAR TECHNICAL DECISION</label>
+                        <input type="text" class="form-control" id="var-technical" name="technical" readonly>
+                    </div>
+                </div>
+                <div class="col-md-6 float-right" id="var-disciplinary-decision">
+                    <div class="form-group">
+                        <label for="var-disciplinary">VAR DISCIPLINARY DECISION</label>
+                        <input type="text" class="form-control" id="var-disciplinary" name="disciplinary" readonly>
+                    </div>
+                </div>
+                <div class="col-md-12 float-left">
+                    <label for="explanations" class="col-form-label">Explanations</label>
+                    <textarea class="form-control" id="explanations" name="explanations" readonly style="resize: none;"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).on('click', '.info', function () {
+        const video_id = $(this).attr('rel');
+        $.ajax({
+            type: "GET",
+            url: '{{LINK aj/ap/get-video-info}}',
+            data: {video_id: video_id},
+            success: function (data) {
+                if (data.status === 200) {
+                    let {title,id,technical,disciplinary,var_technical,var_disciplinary,description,} = data.payload;
+                    $('#video-id').val(id);
+                    $('#video-name').val(title);
+                    $('#technical').val(technical);
+                    $('#explanations').val(description);
+                    $('#disciplinary').val(disciplinary);
+                    $('#var-technical').val(var_technical);
+                    $('#var-disciplinary').val(var_disciplinary);
+                    if (technical === null || technical === ''){
+                        $('#technical-decision').hide();
+                    } else {
+                        $('#technical-decision').show();
+                    }
+                    if (disciplinary === null || disciplinary === ''){
+                        $('#disciplinary-decision').hide();
+                    } else {
+                        $('#disciplinary-decision').show();
+                    }
+                    if (var_technical === null || var_technical === ''){
+                        $('#var-technical-decision').hide();
+                    } else {
+                        $('#var-technical-decision').show();
+                    }
+                    if (var_disciplinary === null || var_disciplinary === ''){
+                        $('#var-disciplinary-decision').hide();
+                    } else {
+                        $('#var-disciplinary-decision').show();
+                    }
+                    $('#more-info').modal('show');
+                } else {
+                    $('.d-settings-alert').html('<div class="alert alert-danger">Something Went Wrong</div>');
+                }
+            }
+        });
+    });
+
+
+    function ChangeStatus(id, status) {
+        $.ajax({
+            type: "POST",
+            url: '{{LINK aj/ap/status-change-video}}',
+            data: {video_id: id, status: status},
+            success: function (status) {
+                if (status === '1') {
+                    $('.d-settings-alert').html('<div class="alert alert-danger">Something Went Wrong</div>');
+                } else {
+                    $('.d-settings-alert').html('<div class="alert alert-success">Video Status Changed Successfully</div>');
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1000);
+                }
+            }
+        });
+    }
+
+    function DeleteVideo(id) {
+        const r = confirm("Are you sure you want to delete this video?");
+        if (r === true) {
+            $.ajax({
+                type: "POST",
+                url: '{{LINK aj/ap/delete-video}}',
+                data: {id: id},
+                success: function (status) {
+                    if (status === '1') {
+                        $('.d-settings-alert').html('<div class="alert alert-danger">Something Went Wrong</div>');
+                    } else {
+                        $('.d-settings-alert').html('<div class="alert alert-success">Video Deleted Successfully</div>');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1000);
+                    }
+                }
+            });
+        }
+    }
+
+    $(document).ready(function () {
+        $('.library').on('change', function () {
+            const id = $(this).val();
+            if (id > 0) {
+                $.ajax({
+                    type: 'GET',
+                    url: '{{LINK aj/ap/get-library-channels}}',
+                    data: {id : id},
+                    success: function (data) {
+                        let { channels } = data;
+                        $('.channel').html('<option value="0">Select Collection</option>');
+
+                        channels.forEach(channel => {
+                            $('.channel').append(`<option value="${channel.id}">${channel.channel_name}</option>`);
+                        });
+                    }
+                });
+            } else {
+                $('.channel').html('<option value="">Select Library first</option>');
+            }
+        });
+        $('.channel').on('change', function () {
+            const id = $(this).val();
+            if (id > 0) {
+                $.ajax({
+                    type: 'GET',
+                    url: '{{LINK aj/ap/get-channel-topics}}',
+                    data: {id: id},
+                    success: function (data) {
+                        let {topics} = data;
+                        $('.topic').html('<option value="0">Select Topic</option>');
+
+                        topics.forEach(topic => {
+                            $('.topic').append(`<option value="${topic.id}">${topic.name}</option>`);
+                        });
+                    }
+                });
+            } else {
+                $('.topic').html('<option value="">Select Collection first</option>');
+            }
+        });
+    }); //get-library-channels
+</script>
+
+<script>
+
+
+    $(document).ready(function() {
+        $('#search-form').submit(function(e) {
+            e.preventDefault();
+
+            // Get form data
+            var form_data = $(this).serialize();
+
+            // Send AJAX request
+            $.ajax({
+                url: '{{LINK aj/ap/search-video}}',
+                type: 'POST',
+                data: form_data,
+                success: function(data) {
+                    if (data.status !== 'error'){
+                        $('.tbody').html(`
+                        ${data.videos.map((video) => {
+                            let library = data.libraries.find(library => library.id === video.library_id).name;
+                            let channel = data.channels.find(channel => channel.id === video.channel_id).channel_name;
+                            let topic = data.topics.find(topic => topic.id === video.topic_id).name;
+                            let user = data.users.find(user => user.id === video.user_id);
+                            return `
+                                <tr id="${video.id}">
+                                    <td>${video.id}</td>
+                                    <td>${video.title}</td>
+                                    <td>${library}</td>
+                                    <td>${channel}</td>
+                                    <td>${topic}</td>
+                                    <td>
+                                        <img src="{{LINK }}${user.avatar}" id="user-avatar" alt="User Image">
+                                        <span class="text-nowrap text-truncate" style="max-width: 200px;">
+                                            ${user.username}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                           <span class="btn btn-success change_status" rel="${video.id}" onclick="ChangeStatus('${video.id}', '0')" ` + (video.active === '1' ? '' : 'style="display: none;"') + `><i class="fa fa-check" aria-hidden="true"></i></span>
+                                           <span class="btn btn-danger change_status" rel="${video.id}" onclick="ChangeStatus('${video.id}', '1')" ` + (video.active === '0' ? '' : 'style="display: none;"') + `><i class="fa fa-times" aria-hidden="true"></i></span>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{{LINK edit-video/}}${video.id}"
+                                           class="btn btn-primary btn-sm">Edit</a>
+                                        <button class="btn btn-info btn-sm info" rel="${video.id}">
+                                            Info
+                                        </button>
+                                        <a href="javascript:void(0)" class="btn btn-danger btn-sm"
+                                           onclick="DeleteVideo('${video.id}')">Delete</a>
+                                        <a href="{{LINK watch/}}${video.title}_${video.video_id}&topic_id=${video.topic_id}.html/"
+                                           class="btn btn-success btn-sm" target="_blank">View</a>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    `);
+                    } else {
+                        $('.tbody').html(`
+                            <tr>
+                                <td colspan="8" class="text-center">No data found</td>
+                            </tr>
+                        `);
+                    }
+                },
+            });
+        });
+    });
+    $('#reset-btn').click(function () {
+        $('#search-form')[0].reset();
+        $('#search-form').submit();
+    });
+</script>

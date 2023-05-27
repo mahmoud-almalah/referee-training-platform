@@ -1,0 +1,43 @@
+<div class="videos-latest-list play_list">
+	<h4 class="ptitle">
+		<div>
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark" viewBox="0 0 16 16">
+		  	<path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/>
+			</svg>
+		</div> Libraries
+	</h4>
+	<?php $getAllLibraries = getAllLibraries();
+	foreach($getAllLibraries as $this_library){
+		$path = ($this_library['status'] == '1')?  "{{LINK backend/".$this_library['path']."}}" :"javascript:;";
+        $file_ext = substr($this_library['path'],strrpos($this_library['path'],".")+1);
+
+        if($file_ext == "doc" || $file_ext == "docx"){
+        	$pic = "docx.jpg";
+        }else if($file_ext == "xlsx"){
+        	$pic = "xlsx.jpg";
+    	}else if($file_ext == "txt"){
+        	$pic = "txt.jpg";
+    	}else if($file_ext == "ppt"){
+    		$pic = "ppt.jpg";
+    	}else if($file_ext == "pdf"){
+    		$pic = "pdf.jpg";
+    	}else{
+    		$pic = "general.png";
+    	}
+	?>
+
+	<div class="col-md-4 col-sm-6 play-lists" >
+		<div class="plist_parent">
+			<div class="avatar">
+				<a href="<?= $path;?>">
+					<img src="<?= PT_Link('');?>upload/photos/<?= $pic;?>" alt="<?= $this_library['name'];?>" />
+				</a>
+				<div class="plist-name">
+					<h4><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M19,9H2V11H19V9M19,5H2V7H19V5M2,15H15V13H2V15M17,13V19L22,16L17,13Z" /></svg> <?= $this_library['name'];?></h4>
+				</div>
+			</div>
+		</div>
+	</div>
+	<?php } ?>
+</div>
+<div class="clear"></div>

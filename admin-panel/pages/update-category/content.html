@@ -1,0 +1,73 @@
+<?php
+$id = $_GET['id'];
+$result = getCategory($id);
+$category = $result->fetch_assoc();
+?>
+
+<div class="container-fluid">
+    <div>
+        <h3>Update Category</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="#">Home</a>
+                </li>                
+                <li class="breadcrumb-item">
+                    <a href="#">Manage Categories</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Update Category</li>
+            </ol>
+        </nav>
+    </div>
+    <!-- Vertical Layout -->
+    <div class="row">
+        <div class="col-lg-8 col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">Update Category</h6>
+                    <div class="add-settings-alert"></div>
+                    <form class="add-settings" method="POST">
+                        <input type="hidden" name="id" value="<?php echo $category['id'] ?>">
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <label class="form-label">Category Name </label>
+                                <input type="text" id="page_title" name="category" class="form-control" value="<?php echo $category['category']?>" >
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                        <br>
+                        <button type="submit" class="btn btn-primary m-t-15 waves-effect">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <!-- #END# Vertical Layout -->
+<script>
+
+$(function() {
+    var form_add_settings = $('form.add-settings');
+    form_add_settings.ajaxForm({
+        url: '{{LINK aj/ap/update_category}}',
+        beforeSend: function() {
+            form_add_settings.find('.waves-effect').text('Please wait..');
+        },
+        success: function(data) {
+            if (data.status == 200) {
+                $("html, body").animate({ scrollTop: 0 }, "slow");
+                $('.add-settings-alert').html('<div class="alert alert-success"><i class="fa fa-check"></i> Category updated successfully</div>');
+                setTimeout(function () {
+                    window.location.href = '<?php echo PT_LoadAdminLinkSettings('manage-categories'); ?>';
+                }, 1000);
+            } else if (data.status == 400) {
+                $('.add-settings-alert').html('<div class="alert alert-danger">'+data.message+'</div>');
+                setTimeout(function () {
+                    $('.add-settings-alert').html('');
+                }, 1000);
+            }
+            form_add_settings.find('.waves-effect').text('Update');
+        }
+    });
+});
+</script>

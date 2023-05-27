@@ -1,0 +1,188 @@
+<?php
+$allUsers = getUsers();
+?>
+
+<div class="modal fade" id="share-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Share Playlist</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span class="close_modal" aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+
+          	 	<label for="share_with" class="col-form-label">Share With:</label>
+            	<!-- <input type="text" class="form-control" id="share_with" placeholder="User Name" autocomplete="off"> -->
+            	<input type="hidden" id="user">
+            	<input type="hidden" id="list_id">
+	             
+	            <select class="form-control" id="all-users" >
+	                
+	              <?php foreach($allUsers as $user){?>
+	                <?php if($user['id'] != $pt->user_session){  ?>
+	                <option value="<?php echo $user['id']?>"><?php echo $user['username']?></option>
+	                <?php }  ?>
+	              <?php } ?>
+	              </select>
+			</div>
+        </form>
+        </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" id="share_video" class="btn btn-primary">Share</button>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-4 col-sm-6 play-lists" id="plist_{{ID}}" data-playlist="{{ID}}">
+	<div class="plist_parent" data-id="{{ID}}" data-views="{{VIEWS}}">
+		<div class="avatar">
+			<?php if (IS_LOGGED == true && $pt->isowner == true): ?> 
+		        <span class="video-labels">
+		          <span>
+		            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather feather-info">
+		              <circle cx="12" cy="12" r="10"></circle>
+		              <line x1="12" y1="16" x2="12" y2="12"></line>
+		              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+		            </svg>                          
+		          </span>
+		          <ul class="video-labels-dropdown hidden">
+					<li onclick="PT_EditList('{{ID}}');"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M2,6V8H14V6H2M2,10V12H14V10H2M20.04,10.13C19.9,10.13 19.76,10.19 19.65,10.3L18.65,11.3L20.7,13.35L21.7,12.35C21.92,12.14 21.92,11.79 21.7,11.58L20.42,10.3C20.31,10.19 20.18,10.13 20.04,10.13M18.07,11.88L12,17.94V20H14.06L20.12,13.93L18.07,11.88M2,14V16H10V14H2Z" /></svg> {{LANG edit}}</li>
+					<li onclick="PT_DeleteList('{{ID}}');"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M15,16H19V18H15V16M15,8H22V10H15V8M15,12H21V14H15V12M3,18A2,2 0 0,0 5,20H11A2,2 0 0,0 13,18V8H3V18M14,5H11L10,4H6L5,5H2V7H14V5Z" /></svg> {{LANG delete}}</li>
+					<?php if($pt->user->can_share_video == '1'){?>
+						<li id="share_list" rel="{{LIST_ID}}" data-toggle="modal" data-target="#share-modal" >
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
+							  <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
+							</svg>
+							Share
+						</li>
+					<?php } ?>
+		          </ul>
+		        </span>  			
+			<?php endif; ?>
+			<a href="{{URL}}" data-load="?link1=watch&id={{VIDEO_ID_}}&list={{LIST_ID}}">
+				<img src="{{THUMBNAIL}}" alt="{{TITLE}}" />
+			</a>
+			<span class="alb_count" title="{{LANG videos}}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M17,10.5V7A1,1 0 0,0 16,6H4A1,1 0 0,0 3,7V17A1,1 0 0,0 4,18H16A1,1 0 0,0 17,17V13.5L21,17.5V6.5L17,10.5Z"/></svg> {{COUNT}}</span>
+			<div class="plist-name">
+				<h4><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M19,9H2V11H19V9M19,5H2V7H19V5M2,15H15V13H2V15M17,13V19L22,16L17,13Z" /></svg> {{TITLE}}</h4>
+			</div>
+		</div>
+	</div>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<style>#plist_{{ID}} .plist_parent .avatar:before, #plist_{{ID}} .plist_parent .avatar:after {background-image: url('{{THUMBNAIL}}')}
+div.user-search-result{
+	padding:10px;
+	margin: 3px 0px 0px 0px;
+	background-color: #2C2C2C;
+	color: #CACACA;
+	cursor: pointer;
+}
+</style>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+  $('#share-modal').on('shown.bs.modal', function (e) {
+    $('#all-users').select2();
+  })
+})
+
+$(document).ready(function(){	
+
+	$(document).on('click','#share_list',function(){
+		var playlist_id = $(this).attr('rel');
+		$('#list_id').val(playlist_id);		
+	})
+})
+
+
+$(function(){
+  $('.video-labels').click(function() {
+    if(!$(this).find(".video-labels-dropdown").hasClass('hidden')){
+      $(this).find(".video-labels-dropdown").addClass('hidden');
+    }else{
+      $(this).find(".video-labels-dropdown").removeClass('hidden');
+    }
+  })
+})  
+
+	$('#exampleModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var recipient = button.data('whatever') // Extract info from data-* attributes
+  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+  var modal = $(this)
+  modal.find('.modal-title').text('Share Playlist')
+  modal.find('.modal-body input').val(recipient)
+	
+})
+
+	$('#share_with').keyup(function(){
+		var count = $('#share_with').val().length;
+		var user_name = $('#share_with').val();
+		if(count > 2){
+			$.ajax({
+		        url: '{{LINK aj/ap/search_user}}',
+		        type : 'POST',
+		        data : {user_name:user_name},
+		        
+		        beforeSend: function() {
+		            
+		        },
+		        success: function(data) {
+		        	console.log(data.html);
+		            if (data.status == 200) {
+		            	$('#user_search_area').html(data.html);
+		            }
+		        }
+		    });
+		}else{
+			$('#user_search_area').html('');
+		}
+	})
+
+	$(document).on('click','.user-search-result',function(){
+		var $user_name = $(this).text();
+		var $user_id = $(this).attr('rel');
+
+		$('#share_with').val($user_name);
+		$('#user').val($user_id);
+		$('#user_search_area').html('');
+	});
+
+	$(document).on('click','#share_video',function(){
+		var user_id = $('#all-users').val();
+		var list_id = $('#list_id').val();
+		$.ajax({
+		        url: '{{LINK aj/user/share_playlist}}',
+		        type : 'POST',
+		        data : {user_id:user_id,list_id:list_id},
+		        beforeSend: function() {
+		            
+		        },
+		        success: function(data) {
+		        	console.log(data.html);
+		            if (data.status == 200) {
+		            	if(data.html == 'success'){
+		            		swal("Success!", "Playlist shared successfully", "success");
+		            		setTimeout(function(){ $('.close_modal').click(); }, 1000);
+		            		
+		            	}else{
+		            		swal("Failed!", "User not found!", "error");
+		            	}
+		            }
+		        }
+		    });
+	});
+
+</script>

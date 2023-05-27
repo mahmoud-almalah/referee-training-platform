@@ -1,0 +1,20 @@
+.current-info{
+	display: none;
+}
+
+.wizard ul, .tabcontrol ul {
+    list-style: none !important;
+    padding: 0;
+    margin: 0;
+}
+
+.wizard > .steps > ul > li, .wizard > .actions > ul > li {
+    float: left;
+}
+.wizard > .steps > ul > li {
+    width: 25%;
+}
+.wizard ul > li, .tabcontrol ul > li {
+    display: block;
+    padding: 0;
+}

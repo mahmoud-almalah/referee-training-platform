@@ -1,0 +1,17 @@
+<?php
+	if(isset($_GET['library_id']) && $_GET['library_id'] > 0){
+
+		if(isset($_GET['channel_id']) && $_GET['channel_id'] > 0){
+
+			if(isset($_GET['topic_id']) && $_GET['topic_id'] > 0){
+				include('videos.html');
+			}else{
+				include('topics.html');
+			}
+		}else{
+			include('channels.html');
+		}
+	}else{
+  		include('library.html');
+	}
+?>

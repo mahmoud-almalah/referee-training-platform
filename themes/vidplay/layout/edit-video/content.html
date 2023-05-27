@@ -1,0 +1,523 @@
+<?php
+if ($pt -> user -> admin == 1) {
+$decisions = getAllDecisionInformation();
+$allDecisionTypes = getAllDecisionTypes();
+$getAllChannels = getAllChannel();
+$getAllLibrary = getAllLibrary();
+$getAllTopics = getAllTopics();
+?>
+<link rel="stylesheet" href="{{CONFIG theme_url}}/css/bootstrap-select.min.css">
+<script src="{{CONFIG theme_url}}/js/bootstrap-select.min.js"></script>
+<script src="{{CONFIG theme_url}}/js/emoji/emojionearea/dist/emojionearea.js"></script>
+<link rel="stylesheet" type="text/css" href="{{CONFIG theme_url}}/js/emoji/emojionearea/dist/emojionearea.min.css"/>
+
+<style>
+    .title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #000;
+        text-transform: uppercase;
+
+    }
+    .title::after {
+        content: "";
+        display: block;
+        width: 100%;
+        height: 2px;
+        background: #000;
+        margin-top: 10px;
+    }
+    .title::before {
+        content: "";
+        display: block;
+        width: 100%;
+        height: 2px;
+        background: #000;
+        margin-bottom: 10px;
+    }
+    section {
+        margin-top: 20px;
+    }
+</style>
+
+<div class="wo_about_wrapper_parent">
+    <div class="wo_about_wrapper"></div>
+</div>
+
+<div class="row no-margin-both vp_emoji_pp_input">
+    <div class="col-md-1"></div>
+    <div class="col-md-10 vp_emoji_pp_input">
+        <div class="pt_page_margin">
+            <div class="mat_header"></div>
+            <div class="content pt_shadow vp_emoji_pp_input">
+                <div class="vp_edt_vdo_pg" id="edit-form">
+                    <h2 class="user_sttng_panel_hd">{{LANG edit_video}}
+                        <button type="button" class="btn btn-delete btn_primary btn_primary_rev"
+                                title="{{LANG delete_videos}}" onclick="PT_DeleteVideo({{ID}}, 'edit-page')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                      d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+                            </svg>
+                        </button>
+                    </h2>
+                    <div id="video-success" class="alert alert-success"></div>
+                    <div class="errors alert alert-danger"></div>
+                    <form action="" class="form-horizontal vp_forms" method="POST">
+                        <div class="row no-margin-both vp_emoji_pp_input">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8">
+                                <div class="thumbnail-preview edit-thumb">
+                                    <img src="{{THUMBNAIL}}" alt="{{TITLE}}">
+                                </div>
+                            </div>
+                            <div class="col-md-2"></div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8">
+                                <div class="row">
+
+                                    <div id="All-title">
+                                        <h4 class="text-center col-md-12 mt-3 title">
+                                            Title
+                                        </h4>
+                                        <div class="col-md-12">
+                                            <div class="pp_mat_input">
+                                                <input type="text" name="title" id="title" placeholder="{{LANG video_title}}" value="{{TITLE}}" max="100" min="5">
+                                                <label for="title">{{LANG video_title}}</label>
+                                                <span class="help-block">{{LANG video_title_help}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <section id="Location">
+                                        <h4 class="text-center col-md-12 mt-3 title">
+                                            Location
+                                        </h4>
+
+                                        <div class="col-md-12">
+                                            <div class="pp_mat_input">
+                                                <label for="video-library">Library</label>
+                                                <select name="library_id" id="video-library" class="pp_select_has_label">
+                                                    <?php
+                                                        foreach ($getAllLibrary as $library) {
+                                                    ?>
+                                                    <option value="<?php echo $library['id'] ?>"<?php echo $pt->video->library_id == $library['id'] ? "selected" : "" ?> ><?php echo $library['name'] ?></option>
+                                                    <?php
+                                                        }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="pp_mat_input">
+                                                <label for="video-channel">Collection</label>
+                                                <select name="channel_id" id="video-channel" class="pp_select_has_label">
+                                                    <?php
+                                                        foreach ($getAllChannels as $channel) {
+                                                    ?>
+                                                    <option value="<?php echo $channel['id'] ?>"<?php echo $pt->video->channel_id == $channel['id'] ? "selected" : "" ?> ><?php echo $channel['channel_name'] ?></option>
+                                                    <?php
+                                                        }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="pp_mat_input">
+                                                <label for="video-topic">Topic</label>
+                                                <select name="topic_id" id="video-topic" class="pp_select_has_label">
+                                                    <?php
+                                                        foreach ($getAllTopics as $topic) {
+                                                    ?>
+                                                    <option value="<?php echo $topic['id'] ?>" <?php echo $pt->video->topic_id == $topic['id'] ? "selected" : "" ?> ><?php echo $topic['name'] ?></option>
+                                                    <?php
+                                                        }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    <section id="All-decision">
+                                        <h4 class="text-center col-md-12 mt-3 title">
+                                            Decision
+                                        </h4>
+                                        <div id="decision">
+                                            <div class="col-md-12">
+                                                <div class="pp_mat_input">
+                                                    <label for="decisionType">Decision Type</label>
+                                                    <select class="pp_select_has_label" id="decisionType" name="decisionType">
+                                                        <option selected value="">Select Decision Type</option>
+                                                        <?php
+                                                        foreach ($allDecisionTypes as $type) {
+                                                                ?>
+                                                        <option value="<?php echo $type['id'] ?>"><?php echo $type['name'] ?></option>
+                                                        <?php
+                                                            }
+                                                        ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="technicaldiv">
+                                            <div class="col-md-6">
+                                                <div class="pp_mat_input">
+                                                    <label for="technical">Technical Decision</label>
+                                                    <select class="pp_select_has_label" id="technical" name="technical">
+                                                        <option selected value="<?php echo $pt->video->technical ?>">Select Technical Decision</option>
+                                                        <?php
+                                                            foreach ($decisions as $decision) {
+                                                                if ($decision['technical'] != "" && $decision['technical'] != null) {
+                                                        ?>
+                                                        <option value="<?php echo $decision['technical'] ?>" <?php echo $decision['technical'] == $pt->video->technical ? 'selected' : '' ?> ><?php echo $decision['technical'] ?></option>
+                                                        <?php
+                                                            }}
+                                                        ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="disciplinarydiv">
+                                            <div class="col-md-6">
+                                                <div class="pp_mat_input">
+                                                    <label for="disciplinary">Disciplinary Decision</label>
+                                                    <select class="pp_select_has_label" id="disciplinary" name="disciplinary">
+                                                        <option selected value="<?php echo $pt->video->disciplinary ?>">Select Disciplinary Decision</option>
+                                                        <?php
+                                                        foreach ($decisions as $decision) {
+                                                            if ($decision['disciplinary'] != "" && $decision['disciplinary'] != null) {
+                                                    ?>
+                                                        <option value="<?php echo $decision['disciplinary'] ?>" <?php echo $decision['disciplinary'] == $pt->video->disciplinary ? 'selected' : '' ?> ><?php echo $decision['disciplinary'] ?></option>
+                                                        <?php
+                                                         }}
+                                                    ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="varDisciplinarydiv">
+                                            <div class="col-md-6">
+                                                <div class="pp_mat_input">
+                                                    <label for="var_disciplinary">Var Disciplinary Decision</label>
+                                                    <select class="pp_select_has_label" id="var_disciplinary" name="var_disciplinary">
+                                                        <option selected value="<?php echo $pt->video->var_disciplinary ?>">Select Var Disciplinary Decision
+                                                        </option>
+                                                        <?php
+                                                        foreach ($decisions as $decision) {
+                                                            if ($decision['var_disciplinary'] != "" && $decision['var_disciplinary'] != null) {
+                                                    ?>
+                                                        <option value="<?php echo $decision['var_disciplinary'] ?>" <?php echo $decision['var_disciplinary'] == $pt->video->var_disciplinary ? 'selected' : '' ?> ><?php echo $decision['var_disciplinary'] ?></option>
+                                                        <?php
+                                                        }}
+                                                    ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="varTechnicaldiv">
+                                            <div class="col-md-6">
+                                                <div class="pp_mat_input">
+                                                    <label for="var_technical">Var Technical Decision</label>
+                                                    <select class="pp_select_has_label" id="var_technical" name="var_technical">
+                                                        <option selected value="<?php echo $pt->video->var_technical ?>">Select Var Technical Decision</option>
+                                                        <?php
+                                                        foreach ($decisions as $decision) {
+                                                            if ($decision['var_technical'] != "" && $decision['var_technical'] != null) {
+                                                    ?>
+                                                        <option value="<?php echo $decision['var_technical'] ?>" <?php echo $decision['var_technical'] == $pt->video->var_technical ? 'selected' : '' ?> ><?php echo $decision['var_technical'] ?></option>
+                                                        <?php
+                                                        }}
+                                                    ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    <section id="All-description">
+                                        <h4 class="text-center col-md-12 mt-3 title">
+                                            Explanation
+                                        </h4>
+                                        <div class="col-md-12">
+                                            <div class="pp_mat_input">
+                                                <textarea name="description" id="description" rows="10" placeholder="{{LANG video_descritpion}}" class="description">{{DESC}}</textarea>
+                                                <label for="description">Video Explanation</label>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    <section id="status" class="col-md-12">
+                                        <h4 class="text-center col-md-12 mt-3 title">
+                                            Status
+                                        </h4>
+                                        <div class="col-md-4">
+                                            <h4>Decision</h4>
+                                            <div class="form-check form-check-inline">
+                                                <label class="form-check-label" for="show_dec">Show</label>
+                                                <input class="form-check-input" type="radio" name="show_decision" id="show_dec" value="1" <?php echo $pt->video->is_decision ? "checked" : ""?> >
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <label class="form-check-label form-check-inline" for="hide_dec">Hide</label>
+                                                <input class="form-check-input" type="radio" name="show_decision" id="hide_dec" value="0" <?php echo !$pt->video->is_decision ? "checked" : ""?> >
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <h4>Description</h4>
+                                            <div class="form-check form-check-inline">
+                                                <label class="form-check-label" for="show_desc">Show</label>
+                                                <input class="form-check-input" type="radio" name="show_description" id="show_desc" value="1" <?php echo $pt->video->is_explaination ? "checked" : ""?> >
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <label class="form-check-label form-check-inline" for="hide_desc">Hide</label>
+                                                <input class="form-check-input" type="radio" name="show_description" id="hide_desc" value="0" <?php echo !$pt->video->is_explaination ? "checked" : ""?> >
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <h4>Comments</h4>
+                                            <div class="form-check form-check-inline">
+                                                <label class="form-check-label" for="show_comments">Show</label>
+                                                <input class="form-check-input" type="radio" name="show_comments" id="show_comments" value="1" <?php echo $pt->video->is_comment ? "checked" : ""?> >
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <label class="form-check-label form-check-inline" for="hide_comments">Hide</label>
+                                                <input class="form-check-input" type="radio" name="show_comments" id="hide_comments" value="0" <?php echo !$pt->video->is_comment ? "checked" : ""?> >
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <input id="thumbnail" name="thumbnail" type="file" accept="image/*" class="hidden">
+                        <input type="hidden" name="video-id" class="video-id" value="{{ID}}">
+                        <div class="vp_forms_sbm_btn text-center">
+                            <button type="submit" id="submit-btn" class="btn btn_primary"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M0.41,13.41L6,19L7.41,17.58L1.83,12M22.24,5.58L11.66,16.17L7.5,12L6.07,13.41L11.66,19L23.66,7M18,7L16.59,5.58L10.24,11.93L11.66,13.34L18,7Z" /></svg> {{LANG save}}</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $('.option').each(function () {
+        if (items.includes(parseInt($(this).data('id')))) {
+            $(this).removeClass('hidden').addClass('show');
+        } else {
+            $(this).addClass('hidden');
+        }
+    })
+
+    $(document).on('change', '#privacy', function (event) {
+        event.preventDefault();
+        if ($(this).val() === 3) {
+            $('.scheduled').removeClass('hidden');
+        } else {
+            $('.scheduled').addClass('hidden');
+        }
+    });
+
+    var el = $(".description").emojioneArea({
+        pickerPosition: "bottom",
+        tonesStyle: "radio",
+        events: {
+            keyup: function (editor, event) {
+            }
+        },
+        filters: {
+            flags: false,
+            objects: false,
+            travel_places: false,
+            activity: false
+        }
+    });
+
+    var el2 = $(".move_description").emojioneArea({
+        pickerPosition: "bottom",
+        tonesStyle: "radio",
+        events: {
+            keyup: function (editor, event) {
+            }
+        },
+        filters: {
+            flags: false,
+            objects: false,
+            travel_places: false,
+            activity: false
+        }
+    });
+
+    $(function () {
+        $("#date").datepicker({
+            dateFormat: 'yy-mm-dd',
+            minDate: 'today',
+            prevText: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>',
+            nextText: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>'
+        });
+        $('.edit-thumb').on('click', function (event) {
+            $('#thumbnail').trigger('click');
+        });
+        $('#thumbnail').on('change', function (event) {
+            readURL(this);
+        });
+        $("#mySingleFieldTags").tagit({
+            allowSpaces: true
+        });
+        $('#edit-form form').ajaxForm({
+            url: '{{LINK aj/edit-video}}' + '?hash=' + $('.main_session').val(),
+            beforeSend: function () {
+                $('#submit-btn').attr('disabled', true);
+                $('#submit-btn').text("{{LANG please_wait}}");
+            },
+            success: function (data) {
+                if (data.status == 200) {
+                    $('#video-success').html(data.message);
+                    window.location.href = '{{URL}}';
+                } else {
+                    $('#submit-btn').attr('disabled', false);
+                    $('#submit-btn').html('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> {{LANG publish}}');
+                    $('.errors').removeClass('hidden').html(data.message);
+                }
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        $('#video-library').on('change', function () {
+            var id = $(this).val();
+            if (id > 0) {
+                $.ajax({
+                    type: 'GET',
+                    url: '{{LINK aj/ap/get-library-channels}}',
+                    data: {id: id},
+                    success: function (data) {
+                        let {channels} = data;
+                        $('#video-channel').html('<option value="0">Select Channel</option>');
+
+                        channels.forEach(channel => {
+                            $('#video-channel').append(`<option value="${channel.id}">${channel.channel_name}</option>`);
+                        });
+                    }
+                });
+            } else {
+                $('#video-channel').html('<option value="">Select Library first</option>');
+            }
+        });
+    }); //get-library-channels
+
+    $(document).ready(function () {
+        $('#video-channel').on('change', function () {
+            const id = $(this).val();
+            if (id > 0) {
+                $.ajax({
+                    type: 'GET',
+                    url: '{{LINK aj/ap/get-channel-topics}}',
+                    data: {id: id},
+                    success: function (data) {
+                        let {topics} = data;
+                        $('#video-topic').html('<option value="0">Select Topic</option>');
+
+                        topics.forEach(topic => {
+                            $('#video-topic').append(`<option value="${topic.id}" id="topic-${topic.id}" data-topic="${topic.name}" >${topic.name}</option>`);
+                        });
+                    }
+                });
+            } else {
+                $('#video-topic').html('<option value="">Select Collection first</option>');
+            }
+        });
+    }); //get-channel-topics
+
+
+</script>
+
+<script>
+    $(function(){
+        $(document).on('change','#decisionType',function(){
+
+            let id = $(this).val();
+
+            $.ajax({
+                url: '{{LINK aj/ap/get-decision-type}}',
+                type : 'GET',
+                data : {id : id},
+                success : function(data){
+                    let { technical,disciplinary,var_technical,var_disciplinary } = data.data;
+                    let types = data.types;
+                    let technicalTypes = [];
+                    let disciplinaryTypes = [];
+                    let varTechnicalTypes = [];
+                    let varDisciplinaryTypes = [];
+
+                    types.forEach(type => {
+                        technicalTypes.push(`<option value="${type.technical}" `+ (technical === '' ? 'hidden' : '') +`>${type.technical}</option>`);
+                        disciplinaryTypes.push(`<option value="${type.disciplinary}" `+ (disciplinary === '' ? 'hidden' : '') +`>${type.disciplinary}</option>`);
+                        varTechnicalTypes.push(`<option value="${type.var_technical}" `+ (var_technical === '' ? 'hidden' : '') +`>${type.var_technical}</option>`);
+                        varDisciplinaryTypes.push(`<option value="${type.var_disciplinary}" `+ (var_disciplinary === '' ? 'hidden' : '') +`>${type.var_disciplinary}</option>`);
+                    });
+
+                    $('#technicaldiv').html(`
+                        <div class="col-md-6" `+ (technical === '' ? 'hidden' : '') +`>
+                            <div class="pp_mat_input">
+                                <label for="technical">${technical}</label>
+                                <select class="pp_select_has_label" id="technical" name="technical">
+                                    ${technicalTypes}
+                                </select>
+                            </div>
+                        </div>
+                    `);
+                    $('#disciplinarydiv').html(`
+                        <div class="col-md-6" `+ (disciplinary === '' ? 'hidden' : '') +`>
+                            <div class="pp_mat_input">
+                                <label for="disciplinary">${disciplinary}</label>
+                                <select class="pp_select_has_label" id="disciplinary" name="disciplinary">
+                                    ${disciplinaryTypes}
+                                </select>
+                            </div>
+                        </div>
+                    `);
+                    $('#varTechnicaldiv').html(`
+                        <div class="col-md-6" `+ (var_technical === '' ? 'hidden' : '') +`>
+                            <div class="pp_mat_input">
+                                <label for="var_technical">${var_technical}</label>
+                                <select class="pp_select_has_label" id="var_technical" name="var_technical">
+                                    ${varTechnicalTypes}
+                                </select>
+                            </div>
+                        </div>
+                    `);
+                    $('#varDisciplinarydiv').html(`
+                        <div class="col-md-6" `+ (var_disciplinary === '' ? 'hidden' : '') +`>
+                            <div class="pp_mat_input">
+                                <label for="var_disciplinary">${var_disciplinary}</label>
+                                <select class="pp_select_has_label" id="var_disciplinary" name="var_disciplinary">
+                                    ${varDisciplinaryTypes}
+                                </select>
+                            </div>
+                        </div>
+                    `);
+                }
+            });
+        });
+    }); //decision Type
+</script>
+
+<?php } else { ?>
+<script>
+    window.location.href = '{{LINK }}';
+</script>
+<?php } ?>

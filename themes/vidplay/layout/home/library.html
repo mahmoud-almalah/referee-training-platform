@@ -1,0 +1,92 @@
+<?php
+$backgrounds = getAllBackGround();
+foreach($backgrounds as $background){
+    if($background['status'] == 1){
+?>
+<style>
+    .topicMD {
+        background-image: url(<?php echo $url . '/backend/' . $background[ 'image' ]?>);
+        background-position: center;
+        overflow-y: scroll;
+        background-size: cover;
+        background-repeat: no-repeat;
+        /*background-attachment: fixed;*/
+        position: relative;
+        display: flex;
+        height: 566px;
+    }
+    .container {
+        background-color: rgb(0, 0, 0, 0);
+    }
+</style>
+<?php }} ?>
+<div class="topicMD">
+    <div class="container">
+        <div class="page-container">
+            <?php
+
+            $libraries = [];
+
+            if($pt->user->admin){
+            $libraries = getAllLibraries();
+            }else{
+            $libraries = getAllUserLibraries($pt->user->id);
+            }
+
+            ?>
+            <?php if(mysqli_num_rows($libraries) > 0){?>
+            <?php foreach($libraries as $library){ ?>
+
+            <?php
+
+            $channels = getAllLibraryChannels($library['id']);
+            $count = $channels->num_rows;
+            if($library['status'] == 1){
+            ?>
+
+            <div class="col-md-4 col-sm-6 play-lists">
+                <div class="plist_parent">
+                    <div class="avatar">
+
+                        <a href="<?php echo '?page=library&library_id='.$library['id']?>">
+                            <img src="<?php echo $url .'/backend/'. $library['path']?>"
+                                 alt="<?php echo $library['name']?>">
+                        </a>
+                        <span class="alb_count" title="Channels">
+                            <span class="nav-link-icon">
+                                <i class="material-icons">hub</i>
+                            </span>
+                            &nbsp;<?php echo $count?>
+                      </span>
+                        <div class="plist-name">
+                            <h4>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                    <path fill="currentColor"
+                                          d="M19,9H2V11H19V9M19,5H2V7H19V5M2,15H15V13H2V15M17,13V19L22,16L17,13Z"></path>
+                                </svg>
+                                <?php echo $library['name']?>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php }} ?>
+            <?php }else{ ?>
+            <div class="empty_state">
+              <span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     class="feather feather-layers">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                  <polyline points="2 17 12 22 22 17"></polyline>
+                  <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+              </span>
+                <p>No library found!</p>
+            </div>
+            <?php } ?>
+
+
+        </div>
+    </div>
+</div>

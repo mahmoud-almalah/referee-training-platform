@@ -1,0 +1,61 @@
+<?php
+
+ob_start();
+
+$ids = [];
+
+$users = [];
+
+if(isset($_GET['ids'])){
+	$ids = $_GET['ids'];
+	$users = getSelectedUsers($ids);
+}else{
+	$users = getAllUsers();
+}
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
+$spreadsheet = new Spreadsheet();
+
+$sheet = $spreadsheet->getActiveSheet();
+
+
+$sheet->setCellValue('A1', 'First Name');
+$sheet->setCellValue('B1', 'Last Name');
+$sheet->setCellValue('C1', 'Email');
+$sheet->setCellValue('D1', 'Country');
+$sheet->setCellValue('E1', 'Phone Number');
+$sheet->setCellValue('F1', 'Role');
+$sheet->setCellValue('G1', 'Status');
+$sheet->setCellValue('H1', 'Equipment Size');
+$sheet->setCellValue('I1', 'Shoe Size');
+
+$index = 2;
+foreach($users as $user){
+
+	$sheet->setCellValue('A'.$index, $user['first_name']);
+	$sheet->setCellValue('B'.$index, $user['last_name']);
+	$sheet->setCellValue('C'.$index, $user['email']);
+	$sheet->setCellValue('D'.$index, $user['country']);
+	$sheet->setCellValue('E'.$index, $user['phone']);
+	$sheet->setCellValue('F'.$index, ucfirst($user['role']));
+	$sheet->setCellValue('G'.$index, $user['active'] == 1 ? 'Active' : 'Inactive' );
+	$sheet->setCellValue('H'.$index, $user['equipment_size']);
+	$sheet->setCellValue('I'.$index, $user['show_size']);
+	$index++;
+}
+
+
+
+$writer = new Xlsx($spreadsheet);
+$filename = 'users.xlsx';
+$writer->save($filename);
+$content = file_get_contents($filename);
+header("Content-Disposition: attachment; filename=".$filename);
+
+unlink($filename);
+exit($content);
+?>
+
+<script>window.close();</script>

@@ -1,0 +1,83 @@
+<?php
+$id = $_GET['id'];
+$result = getDecision($id);
+$decision = $result->fetch_assoc();
+?>
+
+
+<div class="container-fluid">
+    <div>
+        <h3>Update Decision</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="#">Home</a>
+                </li>               
+                <li class="breadcrumb-item">
+                    <a href="#">Manage Decisions</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Update Decision</li>
+            </ol>
+        </nav>
+    </div>
+    <!-- Vertical Layout -->
+    <div class="row">
+        <div class="col-lg-8 col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">Update Decision</h6>
+                    <div class="add-settings-alert"></div>
+                    <form class="add-settings" method="POST">
+                        <input type="hidden" name="id" value="<?php echo $decision['id'] ?>">
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <label class="form-label">Name </label>
+                                <input type="text" id="decision-name" name="name" class="form-control" value="<?php echo $decision['name']?>" >
+                            </div>
+                        </div>
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <label class="form-label">Type </label>
+                                <select class="form-control" name="type">
+                                    <option value="Technical" <?php echo $decision['type'] == 'Technical' ? "selected" : "" ?> >Technical</option>
+                                    <option value="Disciplinary" <?php echo $decision['type']  == 'Disciplinary' ? "selected" : "" ?>  >Disciplinary</option>
+                                </select>
+                            </div>
+                        </div>                        
+                        <div class="clearfix"></div>
+                        <br>
+                        <button type="submit" class="btn btn-primary m-t-15 waves-effect">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <!-- #END# Vertical Layout -->
+<script>
+
+$(function() {
+    var form_add_settings = $('form.add-settings');
+    form_add_settings.ajaxForm({
+        url: '{{LINK aj/ap/update_decision}}',
+        beforeSend: function() {
+            form_add_settings.find('.waves-effect').text('Please wait..');
+        },
+        success: function(data) {
+            if (data.status == 200) {
+                $("html, body").animate({ scrollTop: 0 }, "slow");
+                $('.add-settings-alert').html('<div class="alert alert-success"><i class="fa fa-check"></i> Decision updated successfully</div>');
+                setTimeout(function () {
+                    window.location.href = '<?php echo PT_LoadAdminLinkSettings('manage-decisions'); ?>';
+                }, 1000);
+            } else if (data.status == 400) {
+                $('.add-settings-alert').html('<div class="alert alert-danger">'+data.message+'</div>');
+                setTimeout(function () {
+                    $('.add-settings-alert').html('');
+                }, 1000);
+            }
+            form_add_settings.find('.waves-effect').text('Update');
+        }
+    });
+});
+</script>

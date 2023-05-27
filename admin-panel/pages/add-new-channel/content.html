@@ -1,0 +1,225 @@
+<?php
+$categories = getCategories(); 
+$users = getUsers();
+?>
+
+<div class="container-fluid">
+    <div>
+        <h3>Create New Channel</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="#">Home</a>
+                </li>               
+                <li class="breadcrumb-item">
+                    <a href="#">Manage Channels</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Create New Channel</li>
+            </ol>
+        </nav>
+    </div>
+    <!-- Vertical Layout -->
+    <div class="row">
+        <div class="col-lg-8 col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">Create New Channel</h6>
+                    <div class="add-settings-alert"></div>
+                    <form class="add-settings" id="channel-form" method="POST"  enctype="multipart/form-data" >
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <label class="form-label">Name </label>
+                                <input type="text" id="channel-name" name="channel_name" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <label class="form-label">Description </label>
+                                <input type="text" id="channel-description" name="description" class="form-control">
+                            </div>
+                        </div>                        
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <label class="form-label">Categories </label>
+                                <select class="form-control custom-select" name="categories" multiple id="channel-category" >
+                                	<option value="">Select Categories</option>
+	                                <?php 
+	                                foreach ($categories as $category) {
+	                                	echo '<option value="'.$category['id'].'" >'.$category['category'].'</option>';
+	                                }
+	                                ?>                                	
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <label class="form-label">Users </label>
+                                <select class="form-control custom-select" name="users" multiple id="channel-user" >
+                                    <option value="">Select Users</option>
+                                    <?php 
+                                    foreach ($users as $user) {
+                                        if($user['username'] == 'admin'){
+                                            echo '<option value="'.$user['id'].'" selected >'.$user['username'].'</option>';
+                                        }else{
+                                            echo '<option value="'.$user['id'].'" >'.$user['username'].'</option>';
+                                        }
+                                    }
+                                    ?>                                  
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Cover -->
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <label class="form-label">Add Cover Image </label>
+                                <div id="drag-and-drop-zone10" class="dm-uploader p-1 text-center" style="border: 1px dashed #f0f0f0">
+                                      <h3 class="mb-3 mt-3 text-muted">Drag &amp; drop Files here</h3>
+                                      <div class="btn btn-primary mb-2 mt-2">
+                                          <span>Open the file Browser</span>
+                                          <input type="file" title='Click to add Files' />
+                                      </div>
+                                </div>
+                                <ul class="list-unstyled p-2 d-flex flex-column col" id="files10">
+                                    <li class="text-muted text-center empty">No files uploaded.</li>
+                                </ul>                       
+                                <div id="finalfilesform2"></div>
+                            </div>
+                        </div> 
+                        <div class="clearfix"></div>
+                        <!-- Cover Ends -->
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <label class="form-label">Add Thumbnail </label>
+							    <div id="drag-and-drop-zone2" class="dm-uploader p-1 text-center" style="border: 1px dashed #f0f0f0">
+									  <h3 class="mb-3 mt-3 text-muted">Drag &amp; drop Files here</h3>
+									  <div class="btn btn-primary mb-2 mt-2">
+									      <span>Open the file Browser</span>
+									      <input type="file" title='Click to add Files' />
+									  </div>
+								</div>
+								<ul class="list-unstyled p-2 d-flex flex-column col" id="files">
+									<li class="text-muted text-center empty">No files uploaded.</li>
+								</ul>						
+								<div id="finalfilesform"></div>
+                            </div>
+                        </div>                        
+                        <div class="clearfix"></div>
+                        <br>
+                        <button type="submit" class="btn btn-primary m-t-15 waves-effect">Create</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <!-- #END# Vertical Layout -->
+<script>
+	/*
+hash: 50227b1ea2561ec4fa7e8dd3b8e45b01054a4be9
+user_id: 1
+channel_name: test
+description: test
+thumb_image: files/6124b7ecb27aa_aaa.jpeg
+	*/
+$(document).ready(function(){
+	$('#channel-category').select2({placeholder : "Select Categories"});
+    $('#channel-user').select2({placeholder : "Select Users"});
+})
+
+$(document).ready(function () {
+	//Contact Form validation on click event
+	
+	var form_add_settings = $('form.add-settings');
+
+	$("#channel-form").on("submit", function (e) {
+
+		e.preventDefault();
+
+		let thumb_image = $("#thumb_image").val();
+        let cover_image = $("#cover_image").val();
+		let channel_name = $("#channel-name").val();
+		let description = $("#channel-description").val();
+		let user_id = '{{ME id}}';
+        let categories = $('#channel-category').val();
+		let users = $('#channel-user').val();
+
+		let data = { 
+			user_id: user_id, 
+			channel_name: channel_name, 
+			description: description,
+			thumb_image:thumb_image,
+            cover_image:cover_image, 
+			categories : categories,
+            users:users
+		}
+
+		console.log(data);
+
+		$.post('{{LINK aj/ap/add_new_channel}}', data)
+			.done(function (data) {
+	            if (data.status == 200) {
+	                $("html, body").animate({ scrollTop: 0 }, "slow");
+	                $('.add-settings-alert').html('<div class="alert alert-success"><i class="fa fa-check"></i> Channel added successfully</div>');
+	                setTimeout(function () {
+	                    window.location.href = '<?php echo PT_LoadAdminLinkSettings('manage-channels'); ?>';
+	                }, 1000);
+	            } else if (data.status == 400) {
+	                $('.add-settings-alert').html('<div class="alert alert-danger">'+data.message+'</div>');
+	                setTimeout(function () {
+	                    $('.add-settings-alert').html('');
+	                }, 1000);
+	            }
+	            form_add_settings.find('.waves-effect').text('Create');
+			})
+			.fail(function (err) {
+				console.log("error", err);
+			});
+	});
+});
+
+
+</script>
+
+<script src="<?php echo PT_Link('themes/vidplay/js/jquery.dm-uploader.js'); ?>"></script>
+<script src="<?php echo PT_Link('themes/vidplay/js/demo-config.js'); ?>"></script>
+<script src="<?php echo PT_Link('themes/vidplay/js/demo-ui.js'); ?>"></script>
+
+<link href="<?php echo PT_Link('themes/vidplay/css/jquery.dm-uploader.css'); ?>" rel="stylesheet" />
+<script type="text/html" id="files-template">
+  <li class="media">
+    
+    <div class="media-body mb-1">
+      <p class="mb-2">
+        <strong>%%filename%%</strong> - Status: <span class="text-muted">Waiting</span>
+      </p>
+      <div class="progress mb-2">
+        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" 
+          role="progressbar"
+          style="width: 0%" 
+          aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+        </div>
+      </div>
+      
+      <hr class="mt-1 mb-1" />
+    </div>
+  </li>
+</script>
+<script type="text/html" id="files-template10">
+  <li class="media">
+    
+    <div class="media-body mb-1">
+      <p class="mb-2">
+        <strong>%%filename%%</strong> - Status: <span class="text-muted">Waiting</span>
+      </p>
+      <div class="progress mb-2">
+        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" 
+          role="progressbar"
+          style="width: 0%" 
+          aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+        </div>
+      </div>
+      
+      <hr class="mt-1 mb-1" />
+    </div>
+  </li>
+</script>

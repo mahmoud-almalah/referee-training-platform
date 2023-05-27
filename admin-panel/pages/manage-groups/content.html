@@ -1,0 +1,262 @@
+<div class="container-fluid">
+    <div>
+        <h3>Manage User Groups</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="#">Home</a>
+                </li>
+                <li class="breadcrumb-item">Users</li>
+                <li class="breadcrumb-item active" aria-current="page">Manage User Groups</li>
+            </ol>
+        </nav>
+    </div>
+
+    <?php
+        $users = getAllUsers();
+    ?>
+
+    <div id="alert-container"></div>   
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <button class="btn btn-info pull-right"  data-toggle="modal" data-target="#add-user-group" >Add User Group</button>
+                  
+                    <h6 class="card-title">All User Groups</h6>
+                    <div class="btn-file d-flex align-items-center row">
+                     <table class="table table-hover" id="sortable-table" >
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Name</th>
+                          <th scope="col">Users Count</th>
+                          <th scope="col">Actions</th>
+                        </tr>
+                      </thead>
+                      <?php $getAllUserGroups = getAllUserGroups();?>
+                      <tbody>
+                            
+                        <?php $i = 1;
+                            foreach($getAllUserGroups as $user_group){
+                            ?>
+                            <tr>
+                                <th scope="row"><?= $i ?></th>
+                                <td><?= $user_group['name']; ?></td>
+                                <td>
+                                    <?php echo sizeof(explode(',',$user_group['user_ids']))?>
+                                </td>
+                                <td>
+                                    <a class="btn bg-success admn_table_btn edit-user-group " rel="<?= $user_group['id'] ?>"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z"></path></svg> Edit</a>
+                                    
+                                    <button class="btn bg-danger delete_user_group admn_table_btn" rel="<?= $user_group['id'] ?>">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                            <path fill="currentColor" d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"></path>
+                                        </svg> 
+                                        Delete
+                                    </button>
+                                </td>                                
+                            </tr>
+                        <?php 
+                            $i++;
+                            } ?>
+                      </tbody>
+                    </table>
+                    <span class="wait-wave"></span>   
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+
+
+    <div class="modal fade" id="add-user-group" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add User Group</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form class="d-settings" id="user_group_form">
+                        <input type="hidden" name="id" id="user-group-id" value="0">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" name="name" class="form-control" required id="user-group-name" />
+                            <div style="color:red" id="name-error" ></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Users</label>
+                            <select class="select2 form-control" name="user_ids[]" required id="users" multiple >
+                                <?php
+                                    foreach ($users as $user) {
+                                        ?>
+                                        <option value="<?=$user['id']?>" ><?=$user['first_name']?> <?=$user['last_name']?></option>
+                                        <?php
+                                    }
+                                ?>
+                            </select>
+                        </div>    
+
+
+                    </form>                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary m-t-15 waves-effect" form="user_group_form">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+
+$(document).ready(function(){
+    $('.select2').select2();
+})
+
+$(document).ready(function(){
+    $('#add-user-group').on('hidden.bs.modal', function (e) {
+        $('#user_group_form')[0].reset();
+    })
+});
+
+$('select.select2').on('select2:opening', function (e) {
+    setTimeout(()=>{
+        let top = $('.select2-container--open').eq(1).css('top')
+        if(top == '352px'){
+            $('.select2-container--open').eq(1).css({'top':'254px'})
+        }
+    },0)
+});
+
+
+$(function() {
+    $(document).on('submit','#user_group_form',function(e){
+        e.preventDefault();
+        var form_data = $('#user_group_form').serialize();
+        $.ajax({
+            url: '{{LINK aj/ap/add-user-group}}',
+            type : 'POST',
+            data : form_data,
+            beforeSend: function() {
+                //$('#slider_form').find('.waves-effect').text('Please wait..');      
+            },
+            success: function(data) {
+                if (data.status == 200) {
+                    $('#name-error').html('');
+                    if($('#library-id').val() > 0){
+                        $('#alert-container').html(`
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                User group has been updated successfully
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div> 
+                        `);
+                    }else{
+                        $('#alert-container').html(`
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                User group has been added successfully
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div> 
+                        `);
+                    }
+                    $('#add-user-group').modal('hide');  
+                    setTimeout(()=>{
+                        location.reload();
+                    },2000)
+                }else{
+                    $('#alert-container').html(`
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            ${data.message}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div> 
+                    `); 
+                    $('#add-user-group').modal('hide');                
+                }
+            }
+        });
+    });
+});
+    
+
+$(document).on('click','.delete_user_group',function(){
+    var confirmBox = confirm('Are you sure you want to delete this user group');
+
+    if(confirmBox){
+
+        var user_group_id = $(this).attr('rel');
+        var btn = $(this);
+        $.ajax({
+            url: '{{LINK aj/ap/delete-user-group}}',
+            type : 'POST',
+            data : {user_group_id:user_group_id},
+            
+            beforeSend: function() {
+                //$('.wait-wave').text('Please wait..');
+            },
+            success: function(data) {
+                if (data.status == 200) {
+                    $(btn).closest('tr').remove();
+                    $('#alert-container').html(`
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            User group has been deleted successfully
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div> 
+                    `);                    
+                }
+                $('.wait-wave').text('');
+            }
+        });
+    }
+})
+
+
+
+$(document).on('click','.edit-user-group',function(){
+    var user_group_id = $(this).attr('rel');
+
+    $.ajax({
+        url: '{{LINK aj/ap/get-user-group}}',
+        type : 'GET',
+        data : {user_group_id:user_group_id},
+        
+        beforeSend: function() {
+            //$('.wait-wave').text('Please wait..');
+        },
+        success: function(data) {
+            if (data.status == 200) {
+                let {name , user_ids, id } = data.payload;
+
+                $('#user-group-id').val(id);
+                $('#user-group-name').val(name);
+                let uids = user_ids.split(',')
+                $('#users').val(uids).trigger('change');
+                $('#add-user-group').modal('show');             
+            }
+        }
+    }); 
+})
+
+
+$(document).on('click','.remove-row',function(){
+    let id = $(this).data('id');
+
+    $(`.row-${id}`).remove();
+    $(`#hidden-${id}`).remove();
+
+});
+</script>

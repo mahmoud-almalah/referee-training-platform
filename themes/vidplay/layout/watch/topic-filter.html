@@ -1,0 +1,27 @@
+<?php
+$getTopic = getTopic($pt->get_video->topic_id);
+$topic_chanel = $getTopic['channel_id'];
+$getAllChannel = getAllChannelTopicsId($topic_chanel);
+?>
+<div class="videos-list all-topics dropdown pull-right" style="padding-right: 10px;">
+    <span class="dropdown all-topics-dropdown pull-right">
+        <span class="dropdown-toggle pointer" type="button" data-toggle="dropdown">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M10,13V11H18V13H10M10,19V17H14V19H10M10,7V5H22V7H10M6,17H8.5L5,20.5L1.5,17H4V7H1.5L5,3.5L8.5,7H6V17Z"/>
+            </svg>
+            All Topics
+        </span>
+        <ul class="dropdown-menu">
+                <li class="dropdown-item" id="topic_id">
+                    <?php
+                        foreach ($getAllChannel as $topic) {
+                            $getTopicVideo = getTopicVideo($topic['id']);
+                    ?>
+                    <a href="#" data-load="?link1=watch&topic_id=<?php echo $topic['id']; ?>&id=<?php echo $getTopicVideo['video_id']; ?>">
+                            <?php echo $topic['name']; ?>
+                        </a>
+                    <?php } ?>
+                </li>
+        </ul>
+    </span>
+</div>

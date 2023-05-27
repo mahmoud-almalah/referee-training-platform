@@ -1,0 +1,43 @@
+  <div id="">
+    <div class="links-container" style="background-color:#064c18">
+      <div class="container custom-links ">
+        <ul>
+          <li>
+            <a href="{{LINK ?page=library}}"
+              class="<?php echo ($page == 'library') ? 'active' : ''?> prof_menu"
+              >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+              Library
+              <span></span>
+            </a>
+          </li>
+          <li>
+            <a href="{{LINK ?page=collection}}"
+              class="<?php echo ($page == 'collection') ? 'active' : ''?> prof_menu"
+              >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-archive"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
+              My Collection
+              <span></span>
+            </a>
+          </li>
+          <li>
+            <a href="{{LINK ?page=play-lists}}"
+              class="<?php echo ($page == 'play-lists') ? 'active' : ''?> prof_menu"
+              >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-film"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
+              My Playlist
+              <span></span>
+            </a>
+          </li>
+          <li><a href="{{LINK ?page=shared-play-lists}}"
+              class="<?php echo ($page == 'shared-play-lists') ? 'active' : ''?> prof_menu"
+              >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+              Shared Playlist
+              <span></span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>

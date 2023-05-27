@@ -1,0 +1,219 @@
+<div class="container-fluid">
+    <div>
+        <h3>Add / Edit Menu</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="#">Home</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Menu</li>
+            </ol>
+        </nav>
+    </div>
+    <!-- Vertical Layout -->
+    <div class="row">
+        <div class="col-lg-6 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">Add / Edit Menu</h6>
+                    <div class="d-settings-alert"></div>
+                    <?php if(isset($_GET['edit'])){
+                        $getMenuById = getMenuById($_GET['edit'])->fetch_assoc();
+                    $menu_id = $getMenuById['id'];
+                    $menu_name = $getMenuById['name'];
+                    $menu_link = $getMenuById['link'];
+                    $menu_icon = $getMenuById['icon'];
+                    $is_edit = '1';
+                    }else{
+                    $menu_id = "";
+                    $menu_name = "";
+                    $menu_link = "";
+                    $menu_icon = "";
+                    $is_edit = '0';
+                    }?>
+                    <form class="d-settings" method="POST">
+                        <div class="btn-file d-flex align-items-center row">
+                            <div class="col-md-12">
+                                <input type="text" id="menu_name" value="<?= $menu_name; ?>" name="menu_name"
+                                       placeholder="Menu Name" class="form-control" required>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="btn-file d-flex align-items-center row">
+                            <div class="col-md-12">
+                                <input type="URL" id="menu_link" value="<?= $menu_link; ?>" name="menu_link"
+                                       placeholder="Link" class="form-control" required>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="btn-file d-flex align-items-center row">
+                            <div class="col-md-12">
+                                <input type="text" id="icon_name" value="<?= $menu_icon; ?>" name="icon_name"
+                                       placeholder="Icon Name e.g.Dashboard" class="form-control" required>
+                                <h6>Get icon name by clicking here <a href="https://fonts.google.com/icons"
+                                                                      style="color:red;" target="_blank">Icons</a></h6>
+                            </div>
+
+                        </div>
+
+                        <hr>
+                        <input type="hidden" name="menu_id" value="<?= $menu_id;?>">
+                        <input type="hidden" name="is_edit" id="is_edit" value="<?= $is_edit;?>">
+                        <button type="submit" class="btn btn-primary m-t-15 waves-effect">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">All Menu</h6>
+                    <div class="btn-file d-flex align-items-center row">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Menu</th>
+                                <th scope="col">Edit</th>
+                                <th scope="col">Delete</th>
+                            </tr>
+                            </thead>
+                            <?php $getAllMenu = getAllMenu();?>
+                            <tbody>
+                            <?php foreach($getAllMenu as $menu){
+                            $i = 1;
+                        ?>
+                            <tr>
+                                <th scope="row"><?= $i ?></th>
+                                <td><?= $menu['name'] ?></td>
+                                <td>
+                                    <a href="<?php echo PT_LoadAdminLinkSettings('menu'); ?>?edit=<?= $menu['id'] ?>"><span
+                                            class="btn btn-success edit_menu"><i class="fa fa-pencil"
+                                                                                 aria-hidden="true"></i></span></a></td>
+                                <td><span class="btn btn-danger delete_menu" rel="<?= $menu['id'] ?>"><i
+                                        class="fa fa-trash" aria-hidden="true"></i></span></td>
+                            </tr>
+                            <?php
+                            $i++;
+                            } ?>
+                            </tbody>
+                        </table>
+                        <span class="wait-wave"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <!-- #END# Vertical Layout -->
+    <style type="text/css">
+        .btn-file {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .btn-file input[type=file] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            font-size: 100px;
+            text-align: right;
+            opacity: 0;
+            outline: none;
+            background: #fff;
+            cursor: inherit;
+            display: block;
+        }
+
+        .change-file-ico svg {
+            border-radius: 50%;
+            background: rgb(2 154 214 / 15%);
+            color: #029ad6;
+            padding: 10px;
+            width: 50px;
+            height: 50px;
+        }
+
+        .change-file-input {
+            padding: 3px 6px;
+            border: 0;
+            line-height: 1;
+            background: rgb(0 0 0 / 10%);
+            border-radius: 2em;
+            font-size: 13px;
+            width: 100%;
+        }
+    </style>
+    <script>
+
+        $(function () {
+            var form_d_settings = $('form.d-settings');
+            var is_edit = $('#is_edit').val();
+            if (is_edit == "0") {
+                form_d_settings.ajaxForm({
+                    url: '{{LINK aj/ap/save-menu}}',
+                    beforeSend: function () {
+                        form_d_settings.find('.waves-effect').text('Please wait..');
+                    },
+                    success: function (data) {
+                        if (data.status == 200) {
+                            $('#menu_name').val('');
+                            $('#menu_link').val('');
+                            $('#icon_name').val('');
+                            $('.d-settings-alert').html('<div class="alert alert-success"><i class="fa fa-check"></i> Menu Added successfully</div>');
+                        }
+                        form_d_settings.find('.waves-effect').text('Save');
+                    }
+
+                });
+            } else {
+                form_d_settings.ajaxForm({
+                    url: '{{LINK aj/ap/edit-menu}}',
+                    beforeSend: function () {
+                        form_d_settings.find('.waves-effect').text('Please wait..');
+                    },
+                    success: function (data) {
+                        if (data.status == 200) {
+                            $('#menu_name').val('');
+                            $('#menu_link').val('');
+                            $('#icon_name').val('');
+                            $('.d-settings-alert').html('<div class="alert alert-success"><i class="fa fa-check"></i> Menu Edited successfully</div>');
+                        }
+                        form_d_settings.find('.waves-effect').text('Save');
+
+                        location.replace('menu');
+                    }
+
+                });
+            }
+
+
+        });
+
+        $(document).on('click', '.delete_menu', function () {
+            var menu_id = $(this).attr('rel');
+            var btn = $(this);
+            $.ajax({
+                url: '{{LINK aj/ap/delete-menu}}',
+                type: 'POST',
+                data: {menu_id: menu_id},
+
+                beforeSend: function () {
+                    $('.wait-wave').text('Please wait..');
+                },
+                success: function (data) {
+                    if (data.status == 200) {
+                        $(btn).closest('tr').remove();
+                    }
+                    $('.wait-wave').text('');
+                }
+            });
+        })
+    </script>
+</div>

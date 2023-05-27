@@ -1,0 +1,67 @@
+<?php
+
+$ids = [];
+
+$users = [];
+
+if(isset($_GET['ids'])){
+	$ids = $_GET['ids'];
+	$users = getSelectedUsers($ids);
+}else{
+	$users = getAllUsers();
+}
+
+
+$stylesheet = PT_LoadAdminLink('assets/css/bootstrap.min.css');
+
+
+$content .= '<style>'.file_get_contents($stylesheet).'</style>';
+$content .= '<table class="table table-bordered table-sm">';
+$content .= '<tr>';
+$content .= '<td>First Name</td>';
+$content .= '<td>Last Name</td>';
+$content .= '<td>Email</td>';
+$content .= '<td>Country</td>';
+$content .= '<td>Phone</td>';
+$content .= '<td>Role</td>';
+$content .= '<td>Status</td>';
+$content .= '<td>Equipment Size</td>';
+$content .= '<td>Shoe Size</td>';
+$content .= '</tr>';
+
+foreach($users as $user){
+	$content .= '<tr>';
+		$content .= '<td>'.ucfirst($user['first_name']).'</td>';
+		$content .= '<td>'.ucfirst($user['last_name']).'</td>';
+		$content .= '<td>'.$user['email'].'</td>';
+		$content .= '<td>'.$user['country'].'</td>';
+		$content .= '<td>'.$user['phone'].'</td>';
+		$content .= '<td>'.ucfirst($user['role']).'</td>';
+		$content .= '<td>'.($user['active'] == 1 ? 'Active' : 'Inactive').'</td>';
+		$content .= '<td>'.$user['equipment_size'].'</td>';
+		$content .= '<td>'.$user['shoe_size'].'</td>';
+	$content .= '</tr>';	
+}
+
+$content .= '</table>';
+
+
+
+use Dompdf\Dompdf;
+$dompdf = new Dompdf();
+$dompdf->loadHtml($content);
+$dompdf->set_base_path("../../assets/css/");
+
+$dompdf->setPaper('A4', 'landscape');
+
+ob_start();
+
+$dompdf->render();
+ob_get_clean();
+$dompdf->stream("users.pdf");
+
+exit;
+
+?>
+
+<script>window.close();</script>

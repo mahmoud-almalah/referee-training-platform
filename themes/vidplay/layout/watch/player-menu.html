@@ -1,0 +1,13 @@
+<?php
+    $i = 1;
+    ?>
+<div class="video-thumb" id="video-thumb">
+    <span class="video-index"><?php echo $i++; ?></span>
+    <span class="video-time">{{DURATION}}</span>
+    <a href="{{URL}}" data-load="?link1=watch&topic_id={{TOPIC_ID}}&id={{V_ID}}">
+        <img src="{{THUMBNAIL}}" alt="{{TITLE}}"
+             style="width:168px;height:95px; border: 3px solid yellow;"
+        >
+    </a>
+</div>
+<?php $i++; ?>
