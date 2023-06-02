@@ -1,4 +1,9 @@
 <?php
+
+/** @var $pt */
+/** @var $db */
+
+
 $page = 'dashboard';
 if (!empty($_GET['page'])) {
     $page = PT_Secure($_GET['page']);
@@ -9,9 +14,9 @@ $getAllAdminSubMenu = getAllAdminSubMenu();
 
 $page_loaded = '';
 $pages = array(
-    'dashboard',
-    'menu-admin',
-    'submenu-admin',
+    'dashboard' ,
+    'menu-admin' ,
+    'submenu-admin' ,
 );
 foreach ($getAllAdminMenu as $key => $value) {
     $pages[] = $value['link'];
@@ -21,7 +26,7 @@ foreach ($getAllAdminSubMenu as $key => $value) {
 }
 
 
-if (in_array($page, $pages)) {
+if (in_array($page , $pages)) {
     $page_loaded = PT_LoadAdminPage("$page/content");
 }
 
@@ -32,36 +37,37 @@ if (empty($page_loaded)) {
 }
 
 if ($page == 'dashboard') {
-    if ($pt->config->last_admin_collection < (time() - 1800)) {
+    if ($pt -> config -> last_admin_collection < (time() - 1800)) {
         $update_information = PT_UpdateAdminDetails();
     }
 }
 
-if ($pt->config->live_video == 1) {
+if ($pt -> config -> live_video == 1) {
 
-    if ($pt->config->live_video_save == 0) {
+    if ($pt -> config -> live_video_save == 0) {
         try {
-            $posts = $db->where('live_time', '0', '!=')->where('live_time', time() - 11, '<=')->get(T_VIDEOS);
+            $posts = $db -> where('live_time' , '0' , '!=') -> where('live_time' , time() - 11 , '<=') -> get(T_VIDEOS);
             foreach ($posts as $key => $post) {
-                if ($pt->config->live_video == 1 && !empty($pt->config->agora_app_id) && !empty($pt->config->agora_customer_id) && !empty($pt->config->agora_customer_certificate) && $pt->config->live_video_save == 1) {
-                    StopCloudRecording(array('resourceId' => $post->agora_resource_id,
-                        'sid' => $post->agora_sid,
-                        'cname' => $post->stream_name,
-                        'post_id' => $post->id,
-                        'uid' => explode('_', $post->stream_name)[2]));
+                if ($pt -> config -> live_video == 1 && !empty($pt -> config -> agora_app_id) && !empty($pt -> config -> agora_customer_id) && !empty($pt -> config -> agora_customer_certificate) && $pt -> config -> live_video_save == 1) {
+                    StopCloudRecording(array('resourceId' => $post -> agora_resource_id ,
+                        'sid' => $post -> agora_sid ,
+                        'cname' => $post -> stream_name ,
+                        'post_id' => $post -> id ,
+                        'uid' => explode('_' , $post -> stream_name)[2]));
                 }
-                PT_DeleteVideo(PT_Secure($post->id));
+                PT_DeleteVideo(PT_Secure($post -> id));
             }
         } catch (Exception $e) {
 
         }
 
     } else {
-        if ($pt->config->live_video == 1 && $pt->config->amazone_s3_2 != 1) {
+        if ($pt -> config -> live_video == 1 && $pt -> config -> amazone_s3_2 != 1) {
             try {
-                $posts = $db->where('live_time', '0', '!=')->where('live_time', time() - 11, '<=')->get(T_VIDEOS);
+                /** @var $db */
+                $posts = $db -> where('live_time' , '0' , '!=') -> where('live_time' , time() - 11 , '<=') -> get(T_VIDEOS);
                 foreach ($posts as $key => $post) {
-                    PT_DeleteVideo(PT_Secure($post->id));
+                    PT_DeleteVideo(PT_Secure($post -> id));
                 }
             } catch (Exception $e) {
 
@@ -69,9 +75,9 @@ if ($pt->config->live_video == 1) {
         }
     }
 }
-$notify_count = $db->where('recipient_id', 0)->where('admin', 1)->where('seen', 0)->getValue(T_NOTIFICATIONS, 'COUNT(*)');
-$notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('seen', 0)->orderBy('id', 'DESC')->get(T_NOTIFICATIONS);
-$old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('seen', 0, '!=')->orderBy('id', 'DESC')->get(T_NOTIFICATIONS, 5);
+$notify_count = $db -> where('recipient_id' , 0) -> where('admin' , 1) -> where('seen' , 0) -> getValue(T_NOTIFICATIONS , 'COUNT(*)');
+$notifications = $db -> where('recipient_id' , 0) -> where('admin' , 1) -> where('seen' , 0) -> orderBy('id' , 'DESC') -> get(T_NOTIFICATIONS);
+$old_notifications = $db -> where('recipient_id' , 0) -> where('admin' , 1) -> where('seen' , 0 , '!=') -> orderBy('id' , 'DESC') -> get(T_NOTIFICATIONS , 5);
 ?>
 <!doctype html>
 <html lang="en">
@@ -79,8 +85,8 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Admin Panel | <?php echo $pt->config->title; ?></title>
-    <link rel="icon" href="<?php echo $pt->config->theme_url ?>/img/icon.png" type="image/png">
+    <title>Admin Panel | <?php echo $pt -> config -> title; ?></title>
+    <link rel="icon" href="<?php echo $pt -> config -> theme_url ?>/img/icon.png" type="image/png">
 
 
     <!-- Main css -->
@@ -89,7 +95,7 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
     <!-- Google font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Daterangepicker -->
+    <!-- Datetimepicker -->
     <link rel="stylesheet" href="<?php echo(PT_LoadAdminLink('vendors/datepicker/daterangepicker.css')) ?>"
           type="text/css">
 
@@ -105,7 +111,7 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
     <!-- Apex chart -->
     <script src="<?php echo(PT_LoadAdminLink('vendors/charts/apex/apexcharts.min.js')) ?>"></script>
 
-    <!-- Daterangepicker -->
+    <!-- Datetimepicker -->
     <script src="<?php echo(PT_LoadAdminLink('vendors/datepicker/daterangepicker.js')) ?>"></script>
 
     <!-- DataTable -->
@@ -117,7 +123,7 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
 
     <!-- App scripts -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
-    <script type="text/javascript" src="<?php echo $pt->config->theme_url; ?>/js/jquery.form.min.js"></script>
+    <script type="text/javascript" src="<?php echo $pt -> config -> theme_url; ?>/js/jquery.form.min.js"></script>
     <link href="<?php echo PT_LoadAdminLink('vendors/sweetalert/sweetalert.css'); ?>" rel="stylesheet"/>
     <script src="<?php echo PT_LoadAdminLink('assets/js/admin.js'); ?>"></script>
     <link rel="stylesheet" href="<?php echo(PT_LoadAdminLink('vendors/select2/css/select2.min.css')) ?>"
@@ -125,14 +131,16 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
     <?php if ($page == 'create-article' || $page == 'edit-article' || $page == 'manage-announcements' || $page == 'newsletters') { ?>
         <script src="<?php echo PT_LoadAdminLink('vendors/tinymce/js/tinymce/tinymce.min.js'); ?>"></script>
-        <script src="<?php echo PT_LoadAdminLink('vendors/bootstrap-tagsinput/src/bootstrap-tagsinput.js'); ?>"></script>
+        <script
+            src="<?php echo PT_LoadAdminLink('vendors/bootstrap-tagsinput/src/bootstrap-tagsinput.js'); ?>"></script>
         <link href="<?php echo PT_LoadAdminLink('vendors/bootstrap-tagsinput/src/bootstrap-tagsinput.css'); ?>"
               rel="stylesheet"/>
     <?php } ?>
     <?php if ($page == 'custom-design') { ?>
         <script src="<?php echo PT_LoadAdminLink('vendors/codemirror-5.30.0/lib/codemirror.js'); ?>"></script>
         <script src="<?php echo PT_LoadAdminLink('vendors/codemirror-5.30.0/mode/css/css.js'); ?>"></script>
-        <script src="<?php echo PT_LoadAdminLink('vendors/codemirror-5.30.0/mode/javascript/javascript.js'); ?>"></script>
+        <script
+            src="<?php echo PT_LoadAdminLink('vendors/codemirror-5.30.0/mode/javascript/javascript.js'); ?>"></script>
         <link rel="stylesheet" href="<?php echo PT_LoadAdminLink('vendors/codemirror-5.30.0/lib/codemirror.css'); ?>">
     <?php } ?>
 
@@ -152,7 +160,7 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
         <script src="<?php echo(PT_LoadAdminLink('vendors/charts/justgage/justgage.js')) ?>"></script>
     <?php } ?>
 </head>
-<body <?php echo($pt->mode == 'night' || $pt->config->night_mode == 'night' ? 'class="dark"' : ''); ?>>
+<body <?php echo($pt -> mode == 'night' || $pt -> config -> night_mode == 'night' ? 'class="dark"' : ''); ?>>
 <div class="colors"> <!-- To use theme colors with Javascript -->
     <div class="bg-primary"></div>
     <div class="bg-primary-bright"></div>
@@ -183,7 +191,6 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
 <!-- Layout wrapper -->
 <div class="layout-wrapper">
 
-    <!-- Header -->
     <div class="header d-print-none">
         <div class="header-container">
             <div class="header-left">
@@ -194,8 +201,8 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
                 </div>
 
                 <div class="header-logo">
-                    <a href="<?php echo $pt->config->site_url ?>">
-                        <img class="logo" src="<?php echo $pt->config->theme_url ?>/img/logo-light.png" alt="logo">
+                    <a href="<?php echo $pt -> config -> site_url ?>">
+                        <img class="logo" src="<?php echo $pt -> config -> theme_url ?>/img/logo-light.png" alt="logo">
                     </a>
                 </div>
             </div>
@@ -229,7 +236,7 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
                             </a>
                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-big">
                                 <div
-                                        class="border-bottom px-3 py-3 text-center d-flex justify-content-between align-items-center">
+                                    class="border-bottom px-3 py-3 text-center d-flex justify-content-between align-items-center">
                                     <h5 class="mb-0">Notifications</h5>
                                     <?php if ($notify_count > 0) { ?>
                                         <a class="btn btn-sm btn-success" href="javascript:void(0)"
@@ -252,22 +259,22 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
                                                 foreach ($notifications as $key => $notify) {
                                                     $page_ = '';
                                                     $text = '';
-                                                    if ($notify->type == 'bank') {
+                                                    if ($notify -> type == 'bank') {
                                                         $page_ = 'bank-receipts';
                                                         $text = 'You have a new bank payment awaiting your approval';
-                                                    } elseif ($notify->type == 'verify') {
+                                                    } elseif ($notify -> type == 'verify') {
                                                         $page_ = 'verification-requests';
                                                         $text = 'You have a new verification requests awaiting your approval';
-                                                    } elseif ($notify->type == 'mon') {
+                                                    } elseif ($notify -> type == 'mon') {
                                                         $page_ = 'monetization-requests';
                                                         $text = 'You have a new monetization requests awaiting your approval';
-                                                    } elseif ($notify->type == 'with') {
+                                                    } elseif ($notify -> type == 'with') {
                                                         $page_ = 'payment-requests';
                                                         $text = 'You have a new withdrawal requests awaiting your approval';
-                                                    } elseif ($notify->type == 'report') {
+                                                    } elseif ($notify -> type == 'report') {
                                                         $page_ = 'manage-video-reports';
                                                         $text = 'You have a new video reports awaiting your approval';
-                                                    } elseif ($notify->type == 'copy') {
+                                                    } elseif ($notify -> type == 'copy') {
                                                         $page_ = 'copy_report';
                                                         $text = 'You have a new copyright reports awaiting your approval';
                                                     }
@@ -278,8 +285,8 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
                                                             <div class="flex-shrink-0">
                                                                 <figure class="avatar mr-3">
                                                             <span
-                                                                    class="avatar-title bg-info-bright text-info rounded-circle">
-                                                                <?php if ($notify->type == 'bank') { ?>
+                                                                class="avatar-title bg-info-bright text-info rounded-circle">
+                                                                <?php if ($notify -> type == 'bank') { ?>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24" viewBox="0 0 24 24" fill="none"
                                                                          stroke="currentColor" stroke-width="1"
@@ -290,48 +297,48 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
                                                                                                                    height="16"
                                                                                                                    rx="2"
                                                                                                                    ry="2"></rect><line
-                                                                                x1="1" y1="10" x2="23"
-                                                                                y2="10"></line></svg>
-                                                                <?php } elseif ($notify->type == 'verify') { ?>
+                                                                            x1="1" y1="10" x2="23"
+                                                                            y2="10"></line></svg>
+                                                                <?php } elseif ($notify -> type == 'verify') { ?>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24" viewBox="0 0 24 24"><path
-                                                                                fill="#2196f3"
-                                                                                d="M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z"></path></svg>
-                                                                <?php } elseif ($notify->type == 'mon') { ?>
+                                                                            fill="#2196f3"
+                                                                            d="M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z"></path></svg>
+                                                                <?php } elseif ($notify -> type == 'mon') { ?>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24" viewBox="0 0 24 24" fill="none"
                                                                          stroke="currentColor" stroke-width="2"
                                                                          stroke-linecap="round" stroke-linejoin="round"
                                                                          class="feather feather-refresh-cw"><polyline
-                                                                                points="23 4 23 10 17 10"></polyline><polyline
-                                                                                points="1 20 1 14 7 14"></polyline><path
-                                                                                d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-                                                                <?php } elseif ($notify->type == 'with') { ?>
+                                                                            points="23 4 23 10 17 10"></polyline><polyline
+                                                                            points="1 20 1 14 7 14"></polyline><path
+                                                                            d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                                                                <?php } elseif ($notify -> type == 'with') { ?>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24" viewBox="0 0 24 24" fill="none"
                                                                          stroke="currentColor" stroke-width="2"
                                                                          stroke-linecap="round" stroke-linejoin="round"
                                                                          class="feather feather-dollar-sign"><line
-                                                                                x1="12" y1="1" x2="12" y2="23"></line><path
-                                                                                d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                                                                <?php } elseif ($notify->type == 'report') { ?>
+                                                                            x1="12" y1="1" x2="12" y2="23"></line><path
+                                                                            d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                                                                <?php } elseif ($notify -> type == 'report') { ?>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24" viewBox="0 0 24 24" fill="none"
                                                                          stroke="currentColor" stroke-width="2"
                                                                          stroke-linecap="round" stroke-linejoin="round"
                                                                          class="feather feather-flag"><path
-                                                                                d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line
-                                                                                x1="4" y1="22" x2="4"
-                                                                                y2="15"></line></svg>
-                                                                <?php } elseif ($notify->type == 'copy') { ?>
+                                                                            d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line
+                                                                            x1="4" y1="22" x2="4"
+                                                                            y2="15"></line></svg>
+                                                                <?php } elseif ($notify -> type == 'copy') { ?>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24" viewBox="0 0 24 24" fill="none"
                                                                          stroke="currentColor" stroke-width="2"
                                                                          stroke-linecap="round" stroke-linejoin="round"
                                                                          class="feather feather-flag"><path
-                                                                                d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line
-                                                                                x1="4" y1="22" x2="4"
-                                                                                y2="15"></line></svg>
+                                                                            d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line
+                                                                            x1="4" y1="22" x2="4"
+                                                                            y2="15"></line></svg>
                                                                 <?php } ?>
 
                                                             </span>
@@ -341,7 +348,8 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
                                                                 <p class="mb-0 line-height-20 d-flex justify-content-between">
                                                                     <?php echo $text; ?>
                                                                 </p>
-                                                                <span class="text-muted small"><?php echo PT_Time_Elapsed_String($notify->time); ?></span>
+                                                                <span
+                                                                    class="text-muted small"><?php echo PT_Time_Elapsed_String($notify -> time); ?></span>
                                                             </div>
                                                         </a>
                                                     </li>
@@ -356,22 +364,22 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
                                             foreach ($old_notifications as $key => $notify) {
                                                 $page_ = '';
                                                 $text = '';
-                                                if ($notify->type == 'bank') {
+                                                if ($notify -> type == 'bank') {
                                                     $page_ = 'bank-receipts';
                                                     $text = 'You have a new bank payment awaiting your approval';
-                                                } elseif ($notify->type == 'verify') {
+                                                } elseif ($notify -> type == 'verify') {
                                                     $page_ = 'verification-requests';
                                                     $text = 'You have a new verification requests awaiting your approval';
-                                                } elseif ($notify->type == 'mon') {
+                                                } elseif ($notify -> type == 'mon') {
                                                     $page_ = 'monetization-requests';
                                                     $text = 'You have a new monetization requests awaiting your approval';
-                                                } elseif ($notify->type == 'with') {
+                                                } elseif ($notify -> type == 'with') {
                                                     $page_ = 'payment-requests';
                                                     $text = 'You have a new withdrawal requests awaiting your approval';
-                                                } elseif ($notify->type == 'report') {
+                                                } elseif ($notify -> type == 'report') {
                                                     $page_ = 'manage-video-reports';
                                                     $text = 'You have a new video reports awaiting your approval';
-                                                } elseif ($notify->type == 'copy') {
+                                                } elseif ($notify -> type == 'copy') {
                                                     $page_ = 'copy_report';
                                                     $text = 'You have a new copyright reports awaiting your approval';
                                                 }
@@ -381,8 +389,9 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
                                                        class="d-flex align-items-center hide-show-toggler">
                                                         <div class="flex-shrink-0">
                                                             <figure class="avatar mr-3">
-                                                            <span class="avatar-title bg-secondary-bright text-secondary rounded-circle">
-                                                                <?php if ($notify->type == 'bank') { ?>
+                                                            <span
+                                                                class="avatar-title bg-secondary-bright text-secondary rounded-circle">
+                                                                <?php if ($notify -> type == 'bank') { ?>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24" viewBox="0 0 24 24" fill="none"
                                                                          stroke="currentColor" stroke-width="1"
@@ -393,48 +402,48 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
                                                                                                                    height="16"
                                                                                                                    rx="2"
                                                                                                                    ry="2"></rect><line
-                                                                                x1="1" y1="10" x2="23"
-                                                                                y2="10"></line></svg>
-                                                                <?php } elseif ($notify->type == 'verify') { ?>
+                                                                            x1="1" y1="10" x2="23"
+                                                                            y2="10"></line></svg>
+                                                                <?php } elseif ($notify -> type == 'verify') { ?>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24" viewBox="0 0 24 24"><path
-                                                                                fill="#2196f3"
-                                                                                d="M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z"></path></svg>
-                                                                <?php } elseif ($notify->type == 'mon') { ?>
+                                                                            fill="#2196f3"
+                                                                            d="M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z"></path></svg>
+                                                                <?php } elseif ($notify -> type == 'mon') { ?>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24" viewBox="0 0 24 24" fill="none"
                                                                          stroke="currentColor" stroke-width="2"
                                                                          stroke-linecap="round" stroke-linejoin="round"
                                                                          class="feather feather-refresh-cw"><polyline
-                                                                                points="23 4 23 10 17 10"></polyline><polyline
-                                                                                points="1 20 1 14 7 14"></polyline><path
-                                                                                d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-                                                                <?php } elseif ($notify->type == 'with') { ?>
+                                                                            points="23 4 23 10 17 10"></polyline><polyline
+                                                                            points="1 20 1 14 7 14"></polyline><path
+                                                                            d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                                                                <?php } elseif ($notify -> type == 'with') { ?>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24" viewBox="0 0 24 24" fill="none"
                                                                          stroke="currentColor" stroke-width="2"
                                                                          stroke-linecap="round" stroke-linejoin="round"
                                                                          class="feather feather-dollar-sign"><line
-                                                                                x1="12" y1="1" x2="12" y2="23"></line><path
-                                                                                d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                                                                <?php } elseif ($notify->type == 'report') { ?>
+                                                                            x1="12" y1="1" x2="12" y2="23"></line><path
+                                                                            d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                                                                <?php } elseif ($notify -> type == 'report') { ?>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24" viewBox="0 0 24 24" fill="none"
                                                                          stroke="currentColor" stroke-width="2"
                                                                          stroke-linecap="round" stroke-linejoin="round"
                                                                          class="feather feather-flag"><path
-                                                                                d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line
-                                                                                x1="4" y1="22" x2="4"
-                                                                                y2="15"></line></svg>
-                                                                <?php } elseif ($notify->type == 'copy') { ?>
+                                                                            d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line
+                                                                            x1="4" y1="22" x2="4"
+                                                                            y2="15"></line></svg>
+                                                                <?php } elseif ($notify -> type == 'copy') { ?>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24" viewBox="0 0 24 24" fill="none"
                                                                          stroke="currentColor" stroke-width="2"
                                                                          stroke-linecap="round" stroke-linejoin="round"
                                                                          class="feather feather-flag"><path
-                                                                                d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line
-                                                                                x1="4" y1="22" x2="4"
-                                                                                y2="15"></line></svg>
+                                                                            d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line
+                                                                            x1="4" y1="22" x2="4"
+                                                                            y2="15"></line></svg>
                                                                 <?php } ?>
                                                             </span>
                                                             </figure>
@@ -443,7 +452,8 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
                                                             <p class="mb-0 line-height-20 d-flex justify-content-between">
                                                                 <?php echo $text; ?>
                                                             </p>
-                                                            <span class="text-muted small"><?php echo PT_Time_Elapsed_String($notify->time); ?></span>
+                                                            <span
+                                                                class="text-muted small"><?php echo PT_Time_Elapsed_String($notify -> time); ?></span>
                                                         </div>
                                                     </a>
                                                 </li>
@@ -468,28 +478,30 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
                         <li class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" title="User menu" data-toggle="dropdown">
                                 <figure class="avatar avatar-sm">
-                                    <img src="<?php echo $pt->user->avatar; ?>"
+                                    <img src="<?php echo $pt -> user -> avatar; ?>"
                                          class="rounded-circle"
                                          alt="avatar">
                                 </figure>
-                                <span class="ml-2 d-sm-inline d-none"><?php echo $pt->user->name; ?></span>
+                                <span class="ml-2 d-sm-inline d-none"><?php echo $pt -> user -> name; ?></span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-big">
                                 <div class="text-center py-4">
                                     <figure class="avatar avatar-lg mb-3 border-0">
-                                        <img src="<?php echo $pt->user->avatar; ?>"
+                                        <img src="<?php echo $pt -> user -> avatar; ?>"
                                              class="rounded-circle" alt="image">
                                     </figure>
-                                    <h5 class="text-center"><?php echo $pt->user->name; ?></h5>
-                                    <div class="mb-3 small text-center text-muted"><?php echo $pt->user->email; ?></div>
-                                    <a href="<?php echo $pt->user->url; ?>" class="btn btn-outline-light btn-rounded">View
+                                    <h5 class="text-center"><?php echo $pt -> user -> name; ?></h5>
+                                    <div
+                                        class="mb-3 small text-center text-muted"><?php echo $pt -> user -> email; ?></div>
+                                    <a href="<?php echo $pt -> user -> url; ?>"
+                                       class="btn btn-outline-light btn-rounded">View
                                         Profile</a>
                                 </div>
                                 <div class="list-group">
                                     <a href="<?php echo(PT_Link('logout')) ?>" class="list-group-item text-danger">Sign
                                         Out!</a>
-                                    <?php if ($pt->config->night_mode == 'both' || $pt->config->night_mode == 'night_default') { ?>
-                                        <?php if ($pt->mode == 'night') { ?>
+                                    <?php if ($pt -> config -> night_mode == 'both' || $pt -> config -> night_mode == 'night_default') { ?>
+                                        <?php if ($pt -> mode == 'night') { ?>
                                             <a href="javascript:void(0)" class="list-group-item admin_mode"
                                                onclick="ChangeMode('day')">
                                                 <span id="night-mode-text">Day mode </span>
@@ -529,9 +541,7 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
             </ul>
         </div>
     </div>
-    <!-- ./ Header -->
 
-    <!-- Content wrapper -->
     <div class="content-wrapper">
         <!-- begin::navigation -->
         <div class="navigation">
@@ -545,7 +555,7 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
                 <ul>
                     <li>
                         <a <?php echo ($page == 'dashboard') ? 'class="active"' : ''; ?>
-                                href="<?php echo PT_LoadAdminLinkSettings(''); ?>">
+                            href="<?php echo PT_LoadAdminLinkSettings('/'); ?>">
                             <span class="nav-link-icon">
                                 <i class="material-icons">dashboard</i>
                             </span>
@@ -554,7 +564,7 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
                     </li>
                     <li>
                         <a <?php echo ($page == 'menu-admin') ? 'class="active"' : ''; ?>
-                                href="<?php echo PT_LoadAdminLinkSettings('menu-admin'); ?>">
+                            href="<?php echo PT_LoadAdminLinkSettings('menu-admin'); ?>">
                             <span class="nav-link-icon">
                                 <i class="material-icons">menu</i>
                             </span>
@@ -563,7 +573,7 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
                     </li>
                     <li>
                         <a <?php echo ($page == 'submenu-admin') ? 'class="active"' : ''; ?>
-                                href="<?php echo PT_LoadAdminLinkSettings('submenu-admin'); ?>">
+                            href="<?php echo PT_LoadAdminLinkSettings('submenu-admin'); ?>">
                             <span class="nav-link-icon">
                                 <i class="material-icons">menu</i>
                             </span>
@@ -572,12 +582,14 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
                     </li>
 
                     <?php
-                    foreach ($getAllAdminMenu as $menu) {
-                        if ($menu['status'] == 1) {
+                    foreach ($getAllAdminMenu
+
+                    as $menu) {
+                    if ($menu['status'] == 1) {
                     ?>
                     <li <?php echo ($page == $menu['link']) ? 'class="open"' : ''; ?>>
                         <a <?php echo ($page == $menu['link']) ? 'class="active"' : ''; ?>
-                                href="<?php echo PT_LoadAdminLinkSettings($menu['link']); ?>">
+                            href="<?php echo PT_LoadAdminLinkSettings($menu['link']); ?>">
                             <span class="nav-link-icon">
                                 <i class="material-icons"><?php echo $menu['icon']; ?></i>
                             </span>
@@ -586,35 +598,35 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
                         <?php
                         foreach ($getAllAdminSubMenu as $subMenu) {
                             if ($subMenu['status'] == 1 && $subMenu['menu_id'] == $menu['id']) {
-                        ?>
-                        <ul <?php echo ($page == $subMenu['link']) ? 'style="display: block;"' : ''; ?>>
-                            <?php
-                            foreach ($getAllAdminSubMenu as $subMenu) {
-                                if ($subMenu['status'] == 1 && $subMenu['menu_id'] == $menu['id']) {
-                                    ?>
-                                    <li <?php echo ($page == $subMenu['link']) ? 'class="active"' : ''; ?>>
-                                        <a <?php echo ($page == $subMenu['link']) ? 'class="active"' : ''; ?>
-                                                href="<?php echo PT_LoadAdminLinkSettings($subMenu['link']); ?>">
+                                ?>
+                                <ul <?php echo ($page == $subMenu['link']) ? 'style="display: block;"' : ''; ?>>
+                                    <?php
+                                    foreach ($getAllAdminSubMenu as $subMenu) {
+                                        if ($subMenu['status'] == 1 && $subMenu['menu_id'] == $menu['id']) {
+                                            ?>
+                                            <li <?php echo ($page == $subMenu['link']) ? 'class="active"' : ''; ?>>
+                                                <a <?php echo ($page == $subMenu['link']) ? 'class="active"' : ''; ?>
+                                                    href="<?php echo PT_LoadAdminLinkSettings($subMenu['link']); ?>">
                                                 <span class="nav-link-icon">
                                                     <i class="material-icons"><?php echo $subMenu['icon']; ?></i>
                                                 </span>
-                                            <span><?php echo $subMenu['name']; ?></span>
-                                        </a>
-                                    </li>
-                                    <?php
-                                }
-                            }
-                            ?>
-                        </ul>
-                        <?php
+                                                    <span><?php echo $subMenu['name']; ?></span>
+                                                </a>
+                                            </li>
+                                            <?php
+                                        }
+                                    }
+                                    ?>
+                                </ul>
+                                <?php
                             }
                         }
-                    }
-                }
+                        }
+                        }
                         ?>
                     </li>
                     <li>
-                        <a href="http://docs.playtubescript.com" target="_blank">
+                        <a href="https://docs.playtubescript.com" target="_blank">
                             <span class="nav-link-icon">
                                 <i class="material-icons">more_vert</i>
                             </span>
@@ -625,19 +637,12 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
             </div>
         </div>
         <!-- end::navigation -->
-
-        <!-- Content body -->
         <div class="content-body">
-            <!-- Content -->
             <div class="content ">
                 <?php echo $page_loaded; ?>
             </div>
-            <!-- ./ Content -->
-
         </div>
-        <!-- ./ Content body -->
     </div>
-    <!-- ./ Content wrapper -->
 </div>
 <!-- ./ Layout wrapper -->
 
@@ -646,15 +651,15 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
 <script src="<?php echo(PT_LoadAdminLink('assets/js/examples/select2.js')) ?>"></script>
 <script src="<?php echo(PT_LoadAdminLink('assets/js/app.min.js')) ?>"></script>
 <script type="text/javascript">
-    $('body').on('click', function (e) {
+    $('body').on('click', function () {
         $('.dropdown-animating').removeClass('show');
         $('.dropdown-menu').removeClass('show');
     });
 
     function searchInFiles(keyword) {
         if (keyword.length > 2) {
-            $.post('<?php echo $pt->config->site_url; ?>/aj/ap/search_in_pages', {keyword: keyword}, function (data, textStatus, xhr) {
-                if (data.html != '') {
+            $.post('<?php echo $pt -> config -> site_url; ?>/aj/ap/search_in_pages', {keyword: keyword}, function (data) {
+                if (data.html !== '') {
                     $('#search_for_bar').html(data.html)
                 } else {
                     $('#search_for_bar').html('')
@@ -667,44 +672,46 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
 
     jQuery(document).ready(function ($) {
         jQuery.fn.highlight = function (str, className) {
-            if (str != '') {
-                var aTags = document.getElementsByTagName("h2");
-                var bTags = document.getElementsByTagName("label");
-                var cTags = document.getElementsByTagName("h3");
-                var dTags = document.getElementsByTagName("h6");
-                var searchText = str.toLowerCase();
+            let tag_text;
+            let i;
+            if (str !== '') {
+                const aTags = document.getElementsByTagName("h2");
+                const bTags = document.getElementsByTagName("label");
+                const cTags = document.getElementsByTagName("h3");
+                const dTags = document.getElementsByTagName("h6");
+                const searchText = str.toLowerCase();
 
                 if (aTags.length > 0) {
-                    for (var i = 0; i < aTags.length; i++) {
-                        var tag_text = aTags[i].textContent.toLowerCase();
-                        if (tag_text.indexOf(searchText) != -1) {
+                    for (i = 0; i < aTags.length; i++) {
+                        tag_text = aTags[i].textContent.toLowerCase();
+                        if (tag_text.indexOf(searchText) !== -1) {
                             $(aTags[i]).addClass(className)
                         }
                     }
                 }
 
                 if (bTags.length > 0) {
-                    for (var i = 0; i < bTags.length; i++) {
-                        var tag_text = bTags[i].textContent.toLowerCase();
-                        if (tag_text.indexOf(searchText) != -1) {
+                    for (i = 0; i < bTags.length; i++) {
+                        tag_text = bTags[i].textContent.toLowerCase();
+                        if (tag_text.indexOf(searchText) !== -1) {
                             $(bTags[i]).addClass(className)
                         }
                     }
                 }
 
                 if (cTags.length > 0) {
-                    for (var i = 0; i < cTags.length; i++) {
-                        var tag_text = cTags[i].textContent.toLowerCase();
-                        if (tag_text.indexOf(searchText) != -1) {
+                    for (i = 0; i < cTags.length; i++) {
+                        tag_text = cTags[i].textContent.toLowerCase();
+                        if (tag_text.indexOf(searchText) !== -1) {
                             $(cTags[i]).addClass(className)
                         }
                     }
                 }
 
                 if (dTags.length > 0) {
-                    for (var i = 0; i < dTags.length; i++) {
-                        var tag_text = dTags[i].textContent.toLowerCase();
-                        if (tag_text.indexOf(searchText) != -1) {
+                    for (i = 0; i < dTags.length; i++) {
+                        tag_text = dTags[i].textContent.toLowerCase();
+                        if (tag_text.indexOf(searchText) !== -1) {
                             $(dTags[i]).addClass(className)
                         }
                     }
@@ -719,13 +726,13 @@ $old_notifications = $db->where('recipient_id', 0)->where('admin', 1)->where('se
     });
 
     function ReadNotify() {
-        $.get('<?php echo $pt->config->site_url; ?>/aj/ap/ReadNotify', function (data) {
+        $.get('<?php echo $pt -> config -> site_url; ?>/aj/ap/ReadNotify', function () {
             location.reload();
         });
     }
 
     function ChangeMode(mode) {
-        if (mode == 'day') {
+        if (mode === 'day') {
             $('body').removeClass('dark');
             $('.admin_mode').html('<span id="night-mode-text">Night mode </span><svg class="feather feather-moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>');
             $('.admin_mode').attr('onclick', "ChangeMode('night')");
