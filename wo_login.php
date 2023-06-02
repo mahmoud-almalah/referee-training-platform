@@ -8,20 +8,24 @@
 // | PlayTube - The Ultimate Video Sharing Platform
 // | Copyright (c) 2017 PlayTube. All rights reserved.
 // +------------------------------------------------------------------------+
+/**
+ * @var $pt
+ * @var $db
+ */
 require_once('assets/init.php');
-if (isset($_GET['code']) && !empty($_GET['code'])) {
+if (!empty($_GET['code'])) {
     $app_id        = $pt->config->wowonder_app_ID;
     $app_secret    = $pt->config->wowonder_app_key;
     $wowonder_url  = $pt->config->wowonder_domain_uri;
     $code          = $_GET['code'];
-    $url           = $wowonder_url . "/authorize?app_id={$app_id}&app_secret={$app_secret}&code={$code}";
+    $url           = $wowonder_url . "/authorize?app_id=$app_id&app_secret=$app_secret&code=$code";
     $get           = file_get_contents($url);
     $wo_json_reply = json_decode($get, true);
     $access_token  = '';
     if (is_array($wo_json_reply) && isset($wo_json_reply['access_token'])) {
         $access_token    = $wo_json_reply['access_token'];
         $type            = "get_user_data";
-        $url             = $wowonder_url . "/api_request?access_token={$access_token}&type={$type}";
+        $url             = $wowonder_url . "/api_request?access_token=$access_token&type=$type";
         $user_data_json  = file_get_contents($url);
         $user_data_array = json_decode($user_data_json, true);
         if (is_array($user_data_array) && !empty($user_data_array) && isset($user_data_array['user_data'])) {
@@ -49,7 +53,7 @@ if (isset($_GET['code']) && !empty($_GET['code'])) {
                 $last_name    = (isset($user_data['last_name'])) ? PT_Secure($user_data['last_name'], 0) : '';
                 $gender       = (isset($user_data['gender'])) ? PT_Secure($user_data['gender'], 0) : 'male';
                 $username     = (PT_Secure($user_data['username']));
-                $provider     = ($wowonder_url . "/{$username}");
+                $provider     = ($wowonder_url . "/$username");
                 $re_data      = array(
                     'username' => PT_Secure($user_uniq_id, 0),
                     'email' => PT_Secure($user_email, 0),
@@ -85,4 +89,3 @@ if (isset($_GET['code']) && !empty($_GET['code'])) {
 } else {
     echo "<a href='" . $pt->config->site_url . "'>Return back</a>";
 }
-?>

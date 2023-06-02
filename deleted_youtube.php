@@ -1,9 +1,15 @@
 <?php
 require_once('./assets/init.php');
+
+/**
+ * Delete video from database
+ * @var $db
+ */
+
 $videos = $db->where('youtube','','<>')->get(T_VIDEOS,null,array('youtube','id'));
 if (!empty($videos)) {
 	foreach ($videos as $key => $video) {
-		$url = 'http://www.youtube.com/oembed?url=http://www.youtube.com/watch?v='.$video->youtube.'&format=json';
+		$url = 'https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=' .$video->youtube.'&format=json';
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_HEADER, true);    // we want headers
 		curl_setopt($ch, CURLOPT_NOBODY, true);    // we don't need body

@@ -9,6 +9,10 @@
 // | Copyright (c) 2017 PlayTube. All rights reserved.
 // +------------------------------------------------------------------------+
 
+/**
+ * @var $db
+ * @var $pt
+ */
 
 header_remove('Server');
 header("Content-type: application/json");
@@ -56,7 +60,3 @@ require_once   "$api";
 
 echo json_encode($response_data, JSON_PRETTY_PRINT);
 exit();
-
-$db->disconnect();
-unset($pt);
-?>

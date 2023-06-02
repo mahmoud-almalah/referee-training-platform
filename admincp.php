@@ -14,7 +14,7 @@
 require 'assets/init.php';
 require_once('./vendor/autoload.php');
 
-if (IS_LOGGED == false || PT_IsAdmin() == false) {
+if (!IS_LOGGED || !PT_IsAdmin()) {
 	header("Location: " . PT_Link(''));
     exit();
 }

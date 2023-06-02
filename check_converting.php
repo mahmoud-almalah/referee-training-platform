@@ -1,6 +1,13 @@
 <?php
 require_once('./assets/init.php');
-$process_queue = $db->get(T_QUEUE,$pt->config->queue_count,'*');
+
+/**
+ * @var $db
+ * @var $pt
+ * @var $video
+ */
+
+$process_queue = $db->get(T_QUEUE,$pt->config->queue_count);
 if (count($process_queue) <= $pt->config->queue_count && count($process_queue) > 0) {
 	foreach ($process_queue as $key => $value) {
         try {

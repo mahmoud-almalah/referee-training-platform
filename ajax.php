@@ -28,7 +28,7 @@ if ($type  != 'ap' && !in_array($type,$api_requests) && $first != 'download_user
 	$is_error = 0;
 
 	if (!empty($_POST['hash'])) {
-		$hash_id = PT_Secure($_POST['hash']);;
+		$hash_id = PT_Secure($_POST['hash']);
 	}
 
 	else if (!empty($_GET['hash'])) {
@@ -40,7 +40,7 @@ if ($type  != 'ap' && !in_array($type,$api_requests) && $first != 'download_user
 	} 
 
 	else {
-		if (PT_CheckMainSession($hash_id) == false) {
+		if (!PT_CheckMainSession($hash_id)) {
 			$is_error = 1;
 		}
 	}
@@ -68,4 +68,3 @@ if (!empty($_GET['type'])) {
 header('Content-Type: application/json');
 echo json_encode($data);
 exit();
-?>

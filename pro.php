@@ -1,4 +1,9 @@
-<?php 
+<?php
+
+/**
+ * @var $db
+ */
+
 require_once('./assets/init.php');
 if ($_GET['first'] == 'notify' && $_GET['action'] == 'notify') {
 
@@ -42,7 +47,3 @@ if ($_GET['first'] == 'notify' && $_GET['action'] == 'notify') {
 		}
 	}
 }
-
-
-?>
-

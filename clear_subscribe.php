@@ -9,6 +9,10 @@
 // | Copyright (c) 2017 PlayTube. All rights reserved.
 // +------------------------------------------------------------------------+
 
+/**
+ * Clear subscribe
+ * @var $db
+ */
 
 require_once('./assets/init.php');
 $users_id = $db->where('subscriber_price',0,'>')->get(T_USERS,null,array('id'));
