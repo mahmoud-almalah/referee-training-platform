@@ -9,6 +9,10 @@
 // | Copyright (c) 2017 PlayTube. All rights reserved.
 // +------------------------------------------------------------------------+
 
+/**
+ * @var $pt
+ * @var $lang
+ */
 
 $pt->months   = array(
     '1'  => 'January',

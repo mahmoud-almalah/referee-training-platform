@@ -20,21 +20,6 @@ if (!empty($_POST['install'])) {
    if (mysqli_connect_errno()) {
        $ServerErrors[] = "Failed to connect to MySQL: " . mysqli_connect_error();
    }
-   if ($con) {
-    /*
-      $sql = mysqli_query($con, "SELECT @@sql_mode as modes;");
-      $sql_sql = mysqli_fetch_assoc($sql);
-      if (count($sql_sql) > 0) {
-         $results = @explode(',', $sql_sql['modes']);
-         if (in_array('STRICT_TRANS_TABLES', $results)) {
-           $ServerErrors[] = "The sql-mode <b>STRICT_TRANS_TABLES</b> is enabled in your mysql server, please contact your host provider to disable it.";
-         }
-         if (in_array('STRICT_ALL_TABLES', $results)) {
-           $ServerErrors[] = "The sql-mode <b>STRICT_ALL_TABLES</b> is enabled in your mysql server, please contact your host provider to disable it.";
-         }
-      }
-    */
-   }
    if (!filter_var($_POST['site_url'], FILTER_VALIDATE_URL)) {
        $ServerErrors[] = "Invalid site url";
    }
@@ -51,7 +36,7 @@ if (!empty($_POST['install'])) {
      $ServerErrors[] = 'Failed to connect to server, please try again later, or contact us.';
    }
    if (empty($ServerErrors)) {
-      $file_content = 
+      $file_content =
 '<?php
 // +------------------------------------------------------------------------+
 // | @author Deen Doughouz (DoughouzForest)
@@ -98,7 +83,7 @@ $config_file = file_put_contents($config_file_name, $file_content);
               // Perform the query
               $query = mysqli_query($con, $templine);
               // Reset temp variable to empty
-              $templine = ''; 
+              $templine = '';
            }
         }
         if ($query) {
@@ -153,7 +138,7 @@ $config_file = file_put_contents($config_file_name, $file_content);
    }
 }
 ?>
-<html>
+<html lang="en">
     <head>
         <meta charset="UTF-8">
         <title>PlayTube | Installation</title>
@@ -166,7 +151,7 @@ $config_file = file_put_contents($config_file_name, $file_content);
         <script type="text/javascript" src="../themes/default/js/jquery.form.min.js"></script>
     </head>
     <body>
-        <?php 
+        <?php
             $page = 'terms';
             $pages_array = array(
                'req',
@@ -252,8 +237,8 @@ $config_file = file_put_contents($config_file_name, $file_content);
             $allow_url_fopen = false;
             $disabled = true;
             }
-            
-            
+
+
 ?>
         <div class="content-container container">
                 <div class="row admin-panel">
@@ -359,7 +344,7 @@ $config_file = file_put_contents($config_file_name, $file_content);
       </tr>
     </tbody>
   </table>
-                                    
+
                                     <br>
                                     <form action="?page=installation" method="post">
                                         <div class="row">
@@ -402,38 +387,38 @@ $config_file = file_put_contents($config_file_name, $file_content);
                                    <?php } ?>
                                     <form action="?page=installation" method="post" class="form-horizontal install-site-setting">
                                         <div clapurshase_codess="form-group">
-                                            <label class="col-md-3" for="siteName">Purchase code </label>  
+                                            <label class="col-md-3" for="siteName">Purchase code </label>
                                             <div class="col-md-6">
                                                 <input type="text" class="form-control" name="purshase_code" value="<?php echo (!empty($_POST['purshase_code'])) ? $_POST['purshase_code']: '';?>">
                                                 <span class="help-block">Your Envato purchase code, you can get it from <a href="https://help.market.envato.com/hc/en-us/articles/202822600">Here</a>.</span>
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="col-md-3" for="siteName">SQL host name </label>  
+                                            <label class="col-md-3" for="siteName">SQL host name </label>
                                             <div class="col-md-6">
                                                 <input type="text" class="form-control" name="sql_host" value="<?php echo (!empty($_POST['sql_host'])) ? $_POST['sql_host']: '';?>">
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="col-md-3" for="siteTitle">SQL username</label>  
+                                            <label class="col-md-3" for="siteTitle">SQL username</label>
                                             <div class="col-md-6">
-                                                <input type="text" class="form-control" name="sql_user" value="<?php echo (!empty($_POST['sql_user'])) ? $_POST['sql_user']: '';?>"> 
+                                                <input type="text" class="form-control" name="sql_user" value="<?php echo (!empty($_POST['sql_user'])) ? $_POST['sql_user']: '';?>">
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="col-md-3" for="siteName">SQL password </label>  
+                                            <label class="col-md-3" for="siteName">SQL password </label>
                                             <div class="col-md-6">
                                                 <input type="text" class="form-control" name="sql_pass" value="<?php echo (!empty($_POST['sql_pass'])) ? $_POST['sql_pass']: '';?>">
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="col-md-3" for="siteTitle">SQL database name</label>  
+                                            <label class="col-md-3" for="siteTitle">SQL database name</label>
                                             <div class="col-md-6">
-                                                <input type="text" class="form-control" name="sql_name" value="<?php echo (!empty($_POST['sql_name'])) ? $_POST['sql_name']: '';?>"> 
+                                                <input type="text" class="form-control" name="sql_name" value="<?php echo (!empty($_POST['sql_name'])) ? $_POST['sql_name']: '';?>">
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="col-md-3" for="site_url">Site url</label>  
+                                            <label class="col-md-3" for="site_url">Site url</label>
                                             <div class="col-md-6">
                                                 <input type="text" class="form-control" name="site_url" value="<?php echo (!empty($_POST['site_url'])) ? $_POST['site_url']: '';?>">
                                                 <span class="help-block">Examples: <br>http://siteurl.com<br> http://www.siteurl.com<br> http://subdomain.siteurl.com<br> http://siteurl.com/subfolder<br> You can use https:// too.</span>
@@ -441,50 +426,50 @@ $config_file = file_put_contents($config_file_name, $file_content);
                                         </div>
                                         <hr>
                                         <div class="form-group">
-                                            <label class="col-md-3" for="siteEmail">Site name</label>  
+                                            <label class="col-md-3" for="siteEmail">Site name</label>
                                             <div class="col-md-6">
                                                 <input type="text" class="form-control" name="siteName" value="<?php echo (!empty($_POST['siteName'])) ? $_POST['siteName']: '';?>">
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="col-md-3" for="siteEmail">Site title</label>  
+                                            <label class="col-md-3" for="siteEmail">Site title</label>
                                             <div class="col-md-6">
                                                 <input type="text" class="form-control" name="siteTitle" value="<?php echo (!empty($_POST['siteTitle'])) ? $_POST['siteTitle']: '';?>">
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="col-md-3" for="siteEmail">Site E-mail</label>  
+                                            <label class="col-md-3" for="siteEmail">Site E-mail</label>
                                             <div class="col-md-6">
                                                 <input type="text" class="form-control" name="siteEmail" value="<?php echo (!empty($_POST['siteEmail'])) ? $_POST['siteEmail']: '';?>">
                                             </div>
                                         </div>
                                         <hr>
                                         <div class="form-group">
-                                            <label class="col-md-3" for="siteEmail">Admin username</label>  
+                                            <label class="col-md-3" for="siteEmail">Admin username</label>
                                             <div class="col-md-6">
                                                 <input type="text" class="form-control" name="admin_username" value="<?php echo (!empty($_POST['admin_username'])) ? $_POST['admin_username']: '';?>">
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="col-md-3" for="siteEmail">Admin passowrd</label>  
+                                            <label class="col-md-3" for="siteEmail">Admin passowrd</label>
                                             <div class="col-md-6">
                                                 <input type="text" class="form-control" name="admin_password" value="<?php echo (!empty($_POST['admin_password'])) ? $_POST['admin_password']: '';?>">
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="col-md-3" for="siteEmail"></label>  
+                                            <label class="col-md-3" for="siteEmail"></label>
                                             <div class="col-md-6">
                                                 Note: Installation process may take few minutes.
                                             </div>
                                         </div>
-                                        
+
                                         <input type="hidden" name="install" value="install">
                                         <div class="form-group last-btn">
-                                           <label class="col-md-3"></label>  
+                                           <label class="col-md-3"></label>
                                            <div class="col-md-6">
                                               <button type="submit" onclick="Wo_SubmitButton();" class="btn btn-main" <?php echo ($disabled == true) ? 'disabled': '';?>>
                                               <i class="fa fa-download progress-icon" data-icon="download"></i> Install
-                                              </button>   
+                                              </button>
                                            </div>
                                         </div>
                                     </form>
@@ -514,7 +499,7 @@ function Wo_SubmitButton() {
                 $('#next-terms').attr('disabled', false);
             } else {
             	$('#next-terms').attr('disabled', true);
-            }       
+            }
         });
     });
 </script>
@@ -634,7 +619,7 @@ function Wo_SubmitButton() {
     font-size: 18px;
     }
     table, td, th, tr {
-      font-size: 14px !important; 
+      font-size: 14px !important;
     }
     small {
       color: #555 !important;
