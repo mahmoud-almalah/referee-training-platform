@@ -17,6 +17,10 @@ $pages = array(
     'dashboard' ,
     'menu-admin' ,
     'submenu-admin' ,
+    'manage-topics' ,
+    'manage-videos-topic' ,
+    'manage-videos' ,
+    'add-user' ,
 );
 foreach ($getAllAdminMenu as $key => $value) {
     $pages[] = $value['link'];

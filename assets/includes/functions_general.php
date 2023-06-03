@@ -3,7 +3,7 @@
 // | @author Deen Doughouz (DoughouzForest)
 // | @author_url 1: http://www.playtubescript.com
 // | @author_url 2: http://codecanyon.net/user/doughouzforest
-// | @author_email: wowondersocial@gmail.com   
+// | @author_email: wowondersocial@gmail.com
 // +------------------------------------------------------------------------+
 // | PlayTube - The Ultimate Video Sharing Platform
 // | Copyright (c) 2017 PlayTube. All rights reserved.
@@ -1604,6 +1604,31 @@ function searchCategory($search_value,$user_id=""){
     $search_result = "SELECT `categories`.*, `videos`.`channel_id` as 'channel_id' FROM `categories` INNER JOIN `videos` ON `categories`.`id` = `videos`.`category_id` WHERE (`categories`.`category` LIKE '%$search_value%') AND `videos`.`user_id` = '$user_id'  GROUP BY `categories`.`id`";
     return $mysqli->query($search_result);
 }
+
+function getAllRefereeing(){
+    global $mysqli;
+    $sql = "SELECT * FROM `refereeing`";
+    return $mysqli->query($sql);
+}
+
+function getAllRefereeingById($id){
+    global $mysqli;
+    $sql = "SELECT * FROM `refereeing` WHERE `id` = '$id'";
+    return $mysqli->query($sql);
+}
+
+function getAllRefereeingByType($type){
+    global $mysqli;
+    $sql = "SELECT * FROM `refereeing` WHERE `status` = '$type'";
+    return $mysqli->query($sql);
+}
+
+function getAllRefereeingByCountry($country){
+    global $mysqli;
+    $sql = "SELECT * FROM `refereeing` WHERE `country` = '$country'";
+    return $mysqli->query($sql);
+}
+
 
 function getAllSharedVideos($user_id){
     global $mysqli;

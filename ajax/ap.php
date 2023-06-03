@@ -1280,6 +1280,69 @@ if ($first == 'search-video'){
 
 }
 
+if ($first == 'search-referee'){
+
+    $keyword = $_POST['search'];
+    $first_name = $_POST['first_name'];
+    $last_name = $_POST['last_name'];
+    $country = $_POST['country'];
+    $status = $_POST['status'];
+    $role = $_POST['role'];
+
+    $sql = "SELECT * FROM refereeing WHERE 1=1";
+
+    if (!empty($keyword)) {
+        $sql .= " AND ( first_name LIKE
+                        '%$keyword%'
+                        OR
+                        last_name LIKE
+                        '%$keyword%'
+                        OR
+                        country LIKE
+                        '%$keyword%'
+                        OR
+                        role LIKE
+                        '%$keyword%'
+                        )";
+    }
+    if (!empty($first_name)) {
+        $sql .= " AND first_name = '$first_name'";
+    }
+    if (!empty($last_name)) {
+        $sql .= " AND last_name = '$last_name'";
+    }
+    if (!empty($country)) {
+        $sql .= " AND country = '$country'";
+    }
+    if (!empty($status)) {
+        $sql .= " AND status = '$status'";
+    }
+    if (!empty($role)) {
+        $sql .= " AND role = '$role'";
+    }
+
+    $result = $mysqli->query($sql);
+
+    if($result->num_rows > 0){
+        $data['status'] = 200;
+        $data['referees'] = [];
+        while($referee = $result->fetch_assoc()){
+            $data['referees'][] = $referee;
+        }
+
+        $data['videos'] = [];
+        $sql = "SELECT * FROM videos";
+        $result = $mysqli->query($sql);
+        while($videos = $result->fetch_assoc()){
+            $data['videos'][] = $videos;
+        }
+    }else{
+        $data['status'] = 'error';
+        $data['message'] = 'No video found';
+    }
+
+}
+
 if($first == 'add-channel'){
 
     $library_id = $_POST['library_id'];
@@ -1422,6 +1485,26 @@ if ($first == 'update-slider-order')
 
 }
 
+if ($first == 'add-referee'){
+    $referee_id = $_POST['referee_id'];
+    $referee_first = $_POST['referee-first'];
+    $referee_last = $_POST['referee-last'];
+    $referee_country = $_POST['referee-country'];
+    $referee_role = $_POST['referee-role'];
+    $referee_status = $_POST['referee-status'];
+
+    if($referee_id > 0){
+        $sql = "UPDATE `refereeing` SET `first_name`='$referee_first',`last_name`='$referee_last',`country`='$referee_country',`role`='$referee_role',`status`='$referee_status' WHERE `id` = '$referee_id'";
+    }else{
+        $sql = "INSERT INTO `refereeing`(`first_name`, `last_name`, `country`, `role`, `status`) VALUES ('$referee_first','$referee_last','$referee_country','$referee_role','$referee_status')";
+    }
+    $result = $mysqli->query($sql);
+    if($result){
+        $data['status'] = 200;
+    }else{
+        $data['status'] = 'error';
+    }
+}
 
 if($first == 'add-topic'){
 
@@ -1651,6 +1734,26 @@ if($first == 'get-topic'){
     $data['images'] = $images;
 }
 
+if($first == 'get-referee'){
+    $id = $_POST['id'];
+    $sql = "SELECT * FROM refereeing WHERE id = '$id' LIMIT 1";
+    $result = $mysqli->query($sql);
+    $referee = $result->fetch_assoc();
+
+    $data['status'] = 200;
+    $data['payload'] = $referee;
+}
+
+if($first == 'delete-referee'){
+    $id = $_POST['id'];
+    $sql = "DELETE FROM refereeing WHERE id = '$id'";
+    $mysqli->query($sql);
+
+    $data['status'] = 200;
+    $data['message'] = mysqli_error($mysqli);
+}
+
+
 if($first == 'status-change-topic'){
     $topic_id = $_POST['topic_id'];
     $status = $_POST['status'];
@@ -1706,6 +1809,18 @@ if ($first == 'status-change-video') {
     $sql = "UPDATE `videos` SET `active`= '$status' WHERE `id` = '$video_id'";
     $mysqli->query($sql);
     $data['status'] = 200;
+}
+if ($first == 'status-change-refereeing') {
+    try {
+        $id = $_POST['id'];
+        $status = $_POST['status'];
+        $sql = "UPDATE `refereeing` SET `status`= '$status' WHERE `id` = '$id'";
+        $mysqli->query($sql);
+        $data['status'] = 200;
+    } catch (Exception $e) {
+        $data['status'] = 500;
+    }
+
 }
 /*
  *  Admin Sub Menu
