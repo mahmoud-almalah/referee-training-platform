@@ -1330,11 +1330,11 @@ if ($first == 'search-referee'){
             $data['referees'][] = $referee;
         }
 
-        $data['videos'] = [];
-        $sql = "SELECT * FROM videos";
+        $data['VReferee'] = [];
+        $sql = "SELECT * FROM video_referee";
         $result = $mysqli->query($sql);
         while($videos = $result->fetch_assoc()){
-            $data['videos'][] = $videos;
+            $data['VReferee'][] = $videos;
         }
     }else{
         $data['status'] = 'error';

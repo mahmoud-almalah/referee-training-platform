@@ -1,0 +1,551 @@
+<?php
+$allReferees = getAllRefereeing();
+$getAllVreferee = getAllRefereeingVideo();
+?>
+<style>
+    .table-responsive1 {
+        overflow-x: auto;
+    }
+
+    .change_status {
+        margin-bottom: 5px;
+    }
+
+    .btn-success {
+        color: #fff;
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .btn {
+        display: inline-block;
+        font-weight: 400;
+        color: #212529;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+        border: 1px solid transparent;
+        padding: .375rem .75rem;
+        font-size: .875rem;
+        line-height: 1.5;
+        border-radius: .25rem;
+    }
+
+    .btn-danger {
+        color: #fff;
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    .btn {
+        display: inline-block;
+        font-weight: 400;
+        color: #212529;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+        border: 1px solid transparent;
+        padding: .375rem .75rem;
+        font-size: .875rem;
+        line-height: 1.5;
+        border-radius: .25rem;
+    }
+
+    .btn-primary {
+        color: #fff;
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn {
+        display: inline-block;
+        font-weight: 400;
+        color: #212529;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+        border: 1px solid transparent;
+        padding: .375rem .75rem;
+        font-size: .875rem;
+        line-height: 1.5;
+        border-radius: .25rem;
+    }
+    .select2-container--default .select2-selection--single {
+        background-color: #fff;
+        border: 1px solid #ced4da;
+        border-radius: 0px;
+        height: 38px;
+    }
+</style>
+<div class="container-fluid">
+    <div>
+        <h3>Manage Refereeing</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="#">Home</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="#">Refereeing</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Manage Refereeing</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <button class="btn btn-info pull-right" data-toggle="modal" data-target="#add-referee">Add Referee
+                    </button>
+                    <h6 class="card-title">Manage Refereeing</h6>
+                    <div class="d-settings-alert"></div>
+                    <div class="clearfix"></div>
+                    <br>
+
+                    <form id="search-form" method="post"
+                          class="form-inline mb-2 mr-2 d-none d-md-block search-form col-sm-12">
+                        <label for="search" class="sr-only">Search:</label>
+
+                        <input type="text" name="search" id="search" class="form-control"
+                               placeholder="Search by Name, Country, Role, Status">
+
+                        <select name="country" id="country" class="form-control country mr-2 ml-2">
+                            <option value="">Select Country</option>
+                        </select>
+
+                        <select name="role" id="role" class="form-control role mr-2 ml-2">
+                            <option value="">Select Role</option>
+                            <option value="referee">Referee</option>
+                            <option value="assistant referee">Assistant Referee</option>
+                            <option value="var referee">VAR Referee</option>
+                            <option value="var assistant referee">VAR Assistant Referee</option>
+                        </select>
+
+                        <select name="status" id="status" class="form-control status mr-2 ml-2">
+                            <option value="">Select Status</option>
+                            <option value="positive">Positive</option>
+                            <option value="negative">Negative</option>
+                        </select>
+                        <br>
+                        <button type="submit" id="search-btn" class="btn btn-primary mr-2 ml-2">Search</button>
+                        <button type="button" id="reset-btn" class="btn btn-danger">Reset</button>
+                    </form>
+
+                    <br>
+                    <div class="table-responsive1">
+                        <table class="table table-bordered table-striped table-hover" id="video-table">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Full Name</th>
+                                <th>Country</th>
+                                <th>Role</th>
+                                <th>Total Video</th>
+                                <th>Total Positive & Negative</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody class="tbody">
+                            <?php
+                                foreach ($allReferees as $referees){
+                            ?>
+                            <tr id="<?php echo $referees['id']; ?>">
+                                <td><?php echo $referees['id']; ?></td>
+                                <td><?php echo $referees['first_name'] . ' ' . $referees['last_name']; ?></td>
+                                <td><?php echo $referees['country']; ?></td>
+                                <td><?php echo strtoupper($referees['role']); ?></td>
+                                <td>
+                                    Total Video:
+                                    <?php
+                                    $totalVideo = 0;
+                                    foreach ($getAllVreferee as $video) {
+                                        if ($video['referee_id'] == $referees['id']) {
+                                            $totalVideo++;
+                                        }
+                                    }
+                                    echo $totalVideo;
+                                    ?>
+                                </td>
+                                <td>
+                                    Total Positive:
+                                    <?php
+                                    $totalPositive = 0;
+                                    foreach ($getAllVreferee as $video) {
+                                        if ($video['referee_id'] == $referees['id']) {
+                                            if ($video['state'] == 'positive') {
+                                                $totalPositive++;
+                                            }
+                                        }
+                                    }
+                                    echo $totalPositive;
+                                    ?>
+                                    <br>
+                                    Total Negative:
+                                    <?php
+                                    $totalNegative = 0;
+                                    foreach ($getAllVreferee as $video) {
+                                        if ($video['referee_id'] == $referees['id']) {
+                                            if ($video['state'] == 'negative') {
+                                                $totalNegative++;
+                                            }
+                                        }
+                                    }
+                                    echo $totalNegative;
+                                    ?>
+                                </td>
+                                <td class="text-center">
+                                    <?php if($referees['status'] == 'positive'){ ?>
+                                    <span class="btn btn-success change_status" rel="<?= $video['id'] ?>"
+                                          onclick="ChangeStatus('<?php echo $referees['id']; ?>','negative')">
+                                        <i class="fa fa-check" aria-hidden="true"></i></span>
+                                    <?php }else{ ?>
+                                    <span class="btn btn-danger change_status" rel="<?= $video['id'] ?>"
+                                          onclick="ChangeStatus('<?php echo $referees['id']; ?>','positive')">
+                                        <i class="fa fa-times" aria-hidden="true"></i></span>
+                                    <?php } ?>
+                                </td>
+                                <td>
+                                    <a class="btn bg-success admn_table_btn edit-referee "
+                                       onclick="EditReferee('<?php echo $referees['id']; ?>')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                             viewBox="0 0 24 24">
+                                            <path fill="currentColor"
+                                                  d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z"></path>
+                                        </svg>
+                                        Edit</a>
+
+                                    <button class="btn bg-danger admn_table_btn delete-referee"
+                                            onclick="DeleteReferee('<?php echo $referees['id']; ?>')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                             viewBox="0 0 24 24">
+                                            <path fill="currentColor"
+                                                  d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"></path>
+                                        </svg>
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                            <?php
+                                }
+                            ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="add-referee" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Referee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="d-settings" id="referee_form">
+                    <input type="hidden" name="referee_id" id="referee_id" value="0">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" name="referee-first" class="form-control" required id="referee-first"/>
+                        <div style="color:red" id="first-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" name="referee-last" class="form-control" required id="referee-last"/>
+                        <div style="color:red" id="last-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Country</label>
+                        <select name="referee-country" class="form-control" required id="referee-country">
+                            <option value="">Select Country</option>
+                        </select>
+                        <div style="color:red" id="country-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <select name="referee-role" class="form-control" required id="referee-role">
+                            <option value="">Select Role</option>
+                            <option value="referee">Referee</option>
+                            <option value="assistant referee">Assistant Referee</option>
+                            <option value="var referee">VAR Referee</option>
+                            <option value="var assistant referee">VAR Assistant Referee</option>
+                        </select>
+                        <div style="color:red" id="role-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="referee-status" class="form-control" required id="referee-status">
+                            <option value="">Select Status</option>
+                            <option value="positive">Positive</option>
+                            <option value="negative">Negative</option>
+                        </select>
+                        <div style="color:red" id="status-error"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary m-t-15 waves-effect" form="referee_form">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function ChangeStatus(id, status) {
+        $.ajax({
+            type: "POST",
+            url: '{{LINK aj/ap/status-change-refereeing}}',
+            data: {id: id, status: status},
+            success: function (status) {
+                if (status === 500) {
+                    $('.d-settings-alert').html('<div class="alert alert-danger">Something Went Wrong</div>');
+                } else {
+                    $('.d-settings-alert').html('<div class="alert alert-success">Status Changed Successfully</div>');
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1000);
+                }
+            }
+        });
+    }
+
+    $.ajax({
+        type: "GET",
+        url: 'https://restcountries.com/v3.1/all',
+        success: function (data) {
+            $.each(data, function (key, value) {
+                $('#referee-country').append('<option value="' + value.name.common + '">' + value.name.common + '</option>');
+            });
+        }
+    });
+    $.ajax({
+        type: "GET",
+        url: 'https://restcountries.com/v3.1/all',
+        success: function (data) {
+            $.each(data, function (key, value) {
+                $('#country').append('<option value="' + value.name.common + '">' + value.name.common + '</option>');
+            });
+        }
+    });
+
+
+    $(document).ready(function () {
+        $('#referee-country').select2();
+    });
+
+    $(function () {
+        $(document).on('submit', '#referee_form', function (e) {
+            e.preventDefault();
+            const form_data = $('#referee_form').serialize();
+            $.ajax({
+                url: '{{LINK aj/ap/add-referee}}',
+                type: 'POST',
+                data: form_data,
+                success: function (data) {
+                    if (data.status === 200) {
+                        if ($('#referee_id').val() > 0) {
+                            $('.d-settings-alert').html(`
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                Referee has been updated successfully
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        `);
+                        } else {
+                            $('.d-settings-alert').html(`
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                Referee has been added successfully
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        `);
+                        }
+                        $('#add-referee').modal('hide');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000)
+                    } else {
+                        $('.d-settings-alert').html(`
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            ${data.message}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    `);
+                        $('#add-referee').modal('hide');
+                    }
+                }
+            });
+        });
+    });
+
+    function EditReferee(id) {
+        $.ajax({
+            url: '{{LINK aj/ap/get-referee}}',
+            type: 'POST',
+            data: {id: id},
+            success: function (data) {
+                if (data.status === 200) {
+                    let referee = data.payload;
+                    $('#referee_id').val(referee.id);
+                    $('#referee-first').val(referee.first_name);
+                    $('#referee-last').val(referee.last_name);
+                    $('#referee-country').val(referee.country);
+                    $('#referee-role').val(referee.role);
+                    $('#referee-status').val(referee.status);
+                    $('#add-referee').modal('show');
+                    $('#referee-country').select2(
+                        {
+                            placeholder: referee.country
+                        }
+                    );
+                } else {
+                    $('.d-settings-alert').html(`
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            ${data.message}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true" id="alert-close">&times;</span>
+                            </button>
+                        </div>
+                    `);
+                }
+            }
+        });
+    }
+
+    function DeleteReferee(id) {
+        const confirm = window.confirm('Are you sure you want to delete this referee?');
+        if (!confirm) {
+            return false;
+        } else {
+            $.ajax({
+                url: '{{LINK aj/ap/delete-referee}}',
+                type: 'POST',
+                data: {id: id},
+                success: function (data) {
+                    if (data.status === 200) {
+                        $('.d-settings-alert').html(`
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            Referee has been deleted successfully
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true" id="alert-close">&times;</span>
+                            </button>
+                        </div>
+                    `);
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000)
+                    } else {
+                        $('.d-settings-alert').html(`
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            ${data.message}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true" id="alert-close">&times;</span>
+                            </button>
+                        </div>
+                    `);
+                    }
+                }
+            });
+        }
+    }
+</script>
+
+<script>
+    $('#reset-btn').click(function () {
+        $('#search-form')[0].reset();
+        $('#search-form').submit();
+        $('#country').val(null).trigger('change');
+    });
+
+    $(document).ready(function() {
+        $('#search-form').submit(function(e) {
+            e.preventDefault();
+            // Get form data
+            const form_data = $(this).serialize();
+            // Send AJAX request
+            $.ajax({
+                url: '{{LINK aj/ap/search-referee}}',
+                type: 'POST',
+                data: form_data,
+                success: function(data) {
+                    if (data.status === 200){
+                        $('.tbody').html(`
+                        ${data.referees.map((referee) => {
+                            let videos = data.VReferee.filter(video => video.referee_id === referee.id);
+                            return `
+                                <tr id="${referee.id}">
+                                    <td>${referee.id}</td>
+                                    <td>${referee.first_name} ${referee.last_name}</td>
+                                    <td>${referee.country}</td>
+                                    <td>
+                                    ${referee.role.toUpperCase()}
+                                    </td>
+                                    <td>
+                                    Total Video:
+                                    ${videos.length}
+                                    </td>
+                                    <td>
+                                    Total Positive:
+                                    ${videos.filter(video => video.state === 'positive').length}
+                                    <br>
+                                    Total Negative:
+                                    ${videos.filter(video => video.state === 'negative').length}
+                                    </td>
+                                    <td class="text-center">
+                                    <span class="btn btn-success change_status" rel="` + referee.id + `"
+                                          onclick="ChangeStatus('` + referee.id + `','negative')" ` + (referee.status === 'negative' ? 'style="display: none"' : '') + `>
+                                        <i class="fa fa-check" aria-hidden="true"></i></span>
+                                    <span class="btn btn-danger change_status" rel="` + referee.id + `"
+                                          onclick="ChangeStatus('` + referee.id + `','positive')" ` + (referee.status === 'positive' ? 'style="display: none"' : '') + `>
+                                        <i class="fa fa-times" aria-hidden="true"></i></span>
+                                    </td>
+                                   <td>
+                                    <a class="btn bg-success admn_table_btn edit-referee "
+                                       onclick="EditReferee('${referee.id}')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                             viewBox="0 0 24 24">
+                                            <path fill="currentColor"
+                                                  d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z"></path>
+                                        </svg>
+                                        Edit</a>
+
+                                    <button class="btn bg-danger admn_table_btn delete-referee"
+                                            onclick="DeleteReferee('${referee.id}')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                             viewBox="0 0 24 24">
+                                            <path fill="currentColor"
+                                                  d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"></path>
+                                        </svg>
+                                        Delete
+                                    </button>
+                                </td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    `);
+                    } else {
+                        $('.tbody').html(`
+                            <tr>
+                                <td colspan="8" class="text-center">No data found</td>
+                            </tr>
+                        `);
+                    }
+                },
+            });
+        });
+    });
+
+</script>

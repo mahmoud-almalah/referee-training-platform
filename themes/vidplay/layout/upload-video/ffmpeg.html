@@ -3,6 +3,7 @@ if ($pt -> user -> admin == 1) {
 $allDecisionTypes = getAllDecisionTypes();
 $getAllLibraries = getAllLibraries();
 $getAllDecisionTypes = getAllDecisionTypes();
+$allReferees = getAllRefereeing();
 ?>
 
 <link rel="stylesheet" href="{{CONFIG theme_url}}/css/bootstrap-select.min.css">
@@ -38,7 +39,7 @@ $getAllDecisionTypes = getAllDecisionTypes();
                 <input type="file" name="video" accept="video/*" class="upload-video-file" form="upload-video">
             </form>
 
-            <form id="video-form" >
+            <form id="video-form">
                 <input type="hidden" name="video_id" id="uploaded_id">
                 <input type="hidden" name="video_location" id="video-location">
                 <input type="hidden" name="video_thumnail" id="video-thumnail" value="">
@@ -116,7 +117,7 @@ $getAllDecisionTypes = getAllDecisionTypes();
                                 </div>
                             </div>
                             <div class="">
-                                <img src="images/" width="" height="" style="margin:0; padding:0; border:none; display:block;" border="0" class="img" alt="">
+                                <img src="images/" width="" height="" style="margin:0; padding:0; border:none; display:block;" border="0" class="img" alt="" />
                             </div>
                         </div>
                     </div>
@@ -163,7 +164,182 @@ $getAllDecisionTypes = getAllDecisionTypes();
 
 
                 </section>
-
+                <h2>Referees Info</h2>
+                <section>
+                    <div class="row">
+                        <div class="col-md-8 pull-left">
+                            <div class="form-group">
+                                <label>Referees</label>
+                                <select class="form-control pull-left select2" name="referee_name" id="refereeName">
+                                    <option value="0">Select Referees</option>
+                                    <?php
+                                        foreach ($allReferees as $referee) {
+                                            if ($referee['role'] == 'referee') {
+                                    ?>
+                                    <option value="<?php echo $referee['id']; ?>"><?php echo $referee['first_name'] . ' ' . $referee['last_name'] . ' (' . $referee['country'] . ')'; ?></option>
+                                    <?php
+                                        }}
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3 pull-right">
+                            <div class="form-group" style="margin-top: 27px;">
+                                <select class="form-control pull-right" name="referee_state" id="refereeState">
+                                    <option value="0">Select Status</option>
+                                    <option value="positive">Positive</option>
+                                    <option value="negative">Negative</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="padding-top: 110px;">
+                            <div class="col-md-8 pull-left">
+                                <div class="form-group">
+                                    <label>Assistant Referee (1)</label>
+                                    <select class="form-control pull-left select2" name="assistant_referee_name"
+                                            id="assistantRefereeName">
+                                        <option value="0">Select Referees</option>
+                                        <?php
+                                        foreach ($allReferees as $referee) {
+                                            if ($referee['role'] == 'assistant referee') {
+                                    ?>
+                                        <option value="<?php echo $referee['id']; ?>"><?php echo $referee['first_name'] . ' ' . $referee['last_name'] . ' (' . $referee['country'] . ')'; ?></option>
+                                        <?php
+                                        }}
+                                    ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3 pull-right">
+                                <div class="form-group" style="margin-top: 27px;">
+                                    <select class="form-control pull-right" name="assistant_referee_state"
+                                            id="assistantRefereeState">
+                                        <option value="0">Select Status</option>
+                                        <option value="positive">Positive</option>
+                                        <option value="negative">Negative</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding-top: 110px;">
+                            <div class="col-md-8 pull-left">
+                                <div class="form-group">
+                                    <label>Assistant Referee (2)</label>
+                                    <select class="form-control pull-left select2" name="assistant_referee_name2"
+                                            id="assistantRefereeName2">
+                                        <option value="0">Select Referees</option>
+                                        <?php
+                                        foreach ($allReferees as $referee) {
+                                            if ($referee['role'] == 'assistant referee') {
+                                    ?>
+                                        <option value="<?php echo $referee['id']; ?>"><?php echo $referee['first_name'] . ' ' . $referee['last_name'] . ' (' . $referee['country'] . ')'; ?></option>
+                                        <?php
+                                        }}
+                                    ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3 pull-right">
+                                <div class="form-group" style="margin-top: 27px;">
+                                    <select class="form-control pull-right" name="assistant_referee_state2"
+                                            id="assistantRefereeState2">
+                                        <option value="0">Select Status</option>
+                                        <option value="positive">Positive</option>
+                                        <option value="negative">Negative</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding-top: 110px;">
+                            <div class="col-md-8 pull-left">
+                                <div class="form-group">
+                                    <label>4Th Referee</label>
+                                    <select class="form-control pull-left select2" name="4th_referee_name"
+                                            id="4thRefereeName">
+                                        <option value="0">Select Referees</option>
+                                        <?php
+                                        foreach ($allReferees as $referee) {
+                                            if ($referee['role'] == 'referee') {
+                                    ?>
+                                        <option value="<?php echo $referee['id']; ?>"><?php echo $referee['first_name'] . ' ' . $referee['last_name'] . ' (' . $referee['country'] . ')'; ?></option>
+                                        <?php
+                                        }}
+                                    ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3 pull-right">
+                                <div class="form-group" style="margin-top: 27px;">
+                                    <select class="form-control pull-right" name="4th_referee_state"
+                                            id="4thRefereeState">
+                                        <option value="0">Select Status</option>
+                                        <option value="positive">Positive</option>
+                                        <option value="negative">Negative</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding-top: 110px;">
+                            <div class="col-md-8 pull-left">
+                                <div class="form-group">
+                                    <label>VAR Referee</label>
+                                    <select class="form-control pull-left select2" name="var_referee"
+                                            id="varRefereeName">
+                                        <option value="0">Select Referees</option>
+                                        <?php
+                                        foreach ($allReferees as $referee) {
+                                            if ($referee['role'] == 'var referee') {
+                                    ?>
+                                        <option value="<?php echo $referee['id']; ?>"><?php echo $referee['first_name'] . ' ' . $referee['last_name'] . ' (' . $referee['country'] . ')'; ?></option>
+                                        <?php
+                                        }}
+                                    ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3 pull-right">
+                                <div class="form-group" style="margin-top: 27px;">
+                                    <select class="form-control pull-right" name="var_referee"
+                                            id="varRefereeState">
+                                        <option value="0">Select Status</option>
+                                        <option value="positive">Positive</option>
+                                        <option value="negative">Negative</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding-top: 110px;">
+                            <div class="col-md-8 pull-left">
+                                <div class="form-group">
+                                    <label>VAR Assistant Referee</label>
+                                    <select class="form-control pull-left select2" name="var_assistant_referee"
+                                            id="varAssistantRefereeName">
+                                        <option value="0">Select Referees</option>
+                                        <?php
+                                        foreach ($allReferees as $referee) {
+                                            if ($referee['role'] == 'var assistant referee') {
+                                    ?>
+                                        <option value="<?php echo $referee['id']; ?>"><?php echo $referee['first_name'] . ' ' . $referee['last_name'] . ' (' . $referee['country'] . ')'; ?></option>
+                                        <?php
+                                        }}
+                                    ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3 pull-right">
+                                <div class="form-group" style="margin-top: 27px;">
+                                    <select class="form-control pull-right" name="var_assistant_referee"
+                                            id="varAssistantRefereeState">
+                                        <option value="0">Select Status</option>
+                                        <option value="positive">Positive</option>
+                                        <option value="negative">Negative</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2"></div>
+                    </div>
+                </section>
                 <h2>Category</h2>
                 <section>
                     <div class="row">
@@ -227,7 +403,6 @@ $getAllDecisionTypes = getAllDecisionTypes();
                         </div>
                     </div>
                 </section>
-
                 <h2>Privacy</h2>
                 <section>
                     <div class="select_radio_btn" id="privacy_form">
@@ -274,7 +449,7 @@ $getAllDecisionTypes = getAllDecisionTypes();
                     return false;
                 }
                 if(currentIndex === 2 && video_items.length === 0){
-                    return false;
+                    return true;
                 }
                 if (currentIndex > newIndex)
                 {
@@ -335,6 +510,7 @@ $getAllDecisionTypes = getAllDecisionTypes();
                     disciplinary : $('#disciplinary').val(),
                     var_technical : $('#var_technical').val(),
                     var_disciplinary : $('#var_disciplinary').val(),
+                    referrer: $('#re')
                 }
 
                 $.ajax({
@@ -787,6 +963,10 @@ $getAllDecisionTypes = getAllDecisionTypes();
             });
         });
     });
+
+</script>
+
+<script>
 
 </script>
 

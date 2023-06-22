@@ -1629,6 +1629,14 @@ function getAllRefereeingByCountry($country){
     return $mysqli->query($sql);
 }
 
+function getAllRefereeingVideo(){
+    global $mysqli;
+    $sql = "SELECT * FROM `video_referee`";
+    return $mysqli->query($sql);
+}
+
+
+
 
 function getAllSharedVideos($user_id){
     global $mysqli;

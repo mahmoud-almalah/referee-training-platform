@@ -275,6 +275,8 @@ if (!IS_LOGGED || $pt -> config -> upload_system != 'on') {
             $active = PT_Secure($_POST['active']);
             $free_kick_decision = PT_Secure($_POST['free_kick_decision']);
             $yellow_card_decision = PT_Secure($_POST['yellow_card_decision']);
+            $referee = PT_Secure($_POST['referee_id']);
+            $referee_status = PT_Secure($_POST['type']);
             $data_insert = array(
                 'video_id' => $video_id ,
                 'user_id' => $user -> id ,
@@ -322,6 +324,10 @@ if (!IS_LOGGED || $pt -> config -> upload_system != 'on') {
         if ((($pt -> config -> usr_v_mon == 'on' && $pt -> config -> user_mon_approve == 'off') || ($pt -> config -> usr_v_mon == 'on' && $pt -> config -> user_mon_approve == 'on' && $pt -> user -> monetization == '1')) && $pt -> user -> video_mon == '1' && in_array($_POST['monetization'] , array('0' , '1'))) {
             $data_insert['monetization'] = PT_Secure($_POST['monetization']);
         }
+
+        $query = "INSERT INTO rel_platform.video_referee 
+        (video_id , referee_id , type , state) VALUES 
+        ('$video_id' , '$referee' , '$referee_status' , '1')";
 
 
         $data_insert['category_id'] = $_POST['category_id'];
